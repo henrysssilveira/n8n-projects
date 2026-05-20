@@ -3,7 +3,7 @@
     {
       "parameters": {
         "httpMethod": "POST",
-        "path": "avbot",
+        "path": "{endpoint}",
         "options": {
           "responseData": "Success"
         }
@@ -11,10 +11,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -2192,
-        3072
+        -3808,
+        3168
       ],
-      "id": "d4d01d8d-768d-4159-9f4e-d6da2c3de94f",
+      "id": "ed054c81-6a72-4063-8105-c5fb85ee3b53",
       "name": "Webhook1",
       "webhookId": "4d897c0a-114d-407b-ba7a-d42610fbb8e5"
     },
@@ -25,10 +25,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -400,
-        2336
+        -2016,
+        2432
       ],
-      "id": "2ecc3d78-5770-4269-999f-2833cffcad0b",
+      "id": "4dfa7557-bf61-4c8e-bf15-e968e4106abe",
       "name": "Normalize Payload2"
     },
     {
@@ -55,13 +55,13 @@
         },
         "options": {}
       },
-      "id": "3e94b925-2b75-4adb-aa66-98a4bbd7694a",
+      "id": "30640554-8685-4b24-8d89-82507c8b32ab",
       "name": "Detect #AbrirChamado#1",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        944,
-        176
+        -672,
+        272
       ]
     },
     {
@@ -90,13 +90,13 @@
           "looseTypeValidation": true
         }
       },
-      "id": "fda49d24-824b-4462-9ccb-73b5277209b5",
+      "id": "cfede419-1269-4730-b794-07c0ff03b8c3",
       "name": "IF (No Active Ticket)1",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        1168,
-        176
+        -448,
+        272
       ]
     },
     {
@@ -110,10 +110,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        272,
-        2336
+        -1344,
+        2432
       ],
-      "id": "2e8672e4-0ef1-44ce-8d59-a4910a149705",
+      "id": "d13feba0-66cc-4a18-bd06-d2bcaea554ec",
       "name": "Merge"
     },
     {
@@ -187,10 +187,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1168,
-        2544
+        -448,
+        2640
       ],
-      "id": "c3e8b3bc-c6f9-4160-bede-2e09a09fb189",
+      "id": "81656c70-26d3-47e9-8f8c-95b7b806f461",
       "name": "Edit Fields2"
     },
     {
@@ -207,17 +207,11 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        2592,
-        1152
+        976,
+        1248
       ],
-      "id": "128e9bc3-67a1-452b-bc82-66aa5477bfcc",
-      "name": "OpenAI Chat Model",
-      "credentials": {
-        "openAiApi": {
-          "id": "Dq1bDwp43FeWf2cr",
-          "name": "OPENAI - ti.admbr"
-        }
-      }
+      "id": "1010a54b-e31d-4cb2-895a-90c65a416a15",
+      "name": "OpenAI Chat Model"
     },
     {
       "parameters": {
@@ -226,10 +220,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3088,
-        1248
+        1472,
+        1344
       ],
-      "id": "d0e5a235-b938-4bd0-a951-8d50ec91344c",
+      "id": "3bf91425-c8cc-4c4f-a01f-81f622bb8f39",
       "name": "Normalizando Para Fechar Chamado"
     },
     {
@@ -237,10 +231,10 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        944,
-        2560
+        -672,
+        2656
       ],
-      "id": "59a772cc-0fa7-4426-8c8e-5736358445ca",
+      "id": "410cf318-fdff-4524-bf14-2d34b3c7ea31",
       "name": "No Operation, do nothing"
     },
     {
@@ -248,10 +242,10 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        944,
-        2752
+        -672,
+        2848
       ],
-      "id": "f3b8cbe6-a307-43cf-9178-f569eae08314",
+      "id": "f9ba17b7-b710-48b7-ade6-bd59bd0427f3",
       "name": "No Operation, do nothing1"
     },
     {
@@ -262,13 +256,13 @@
           "mimeType": "image/jpeg"
         }
       },
-      "id": "e9c92a26-8fb5-4b5d-b033-eab70641717c",
+      "id": "32d373f8-97d6-4b63-bacb-e38ac663abd0",
       "name": "Convert to JPEG",
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.1,
       "position": [
-        -1296,
-        3008
+        -2912,
+        3104
       ]
     },
     {
@@ -285,13 +279,13 @@
         },
         "options": {}
       },
-      "id": "84a3200c-675e-4a19-81ec-608058c4af11",
+      "id": "b08eb5d5-bebc-4b34-a1ff-6fd1ed7ced1b",
       "name": "Separa o Base ",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -1520,
-        3008
+        -3136,
+        3104
       ]
     },
     {
@@ -311,17 +305,11 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 1.8,
       "position": [
-        -1072,
-        3072
+        -2688,
+        3168
       ],
-      "id": "0b26b6e2-4a80-4bd4-99aa-f75135e2c92d",
-      "name": "OpenAI2",
-      "credentials": {
-        "openAiApi": {
-          "id": "Dq1bDwp43FeWf2cr",
-          "name": "OPENAI - ti.admbr"
-        }
-      }
+      "id": "5c099f98-c818-46d1-9da8-4a4845c29b87",
+      "name": "OpenAI2"
     },
     {
       "parameters": {
@@ -343,13 +331,13 @@
         },
         "options": {}
       },
-      "id": "aff7292f-55f9-4713-b422-77b3e57e40d0",
+      "id": "44136a88-4f0a-46e9-bae7-1cf9fedc0a5d",
       "name": "Destaca descricao imagem",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -848,
-        3072
+        -2464,
+        3168
       ]
     },
     {
@@ -486,10 +474,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        -1744,
-        3024
+        -3360,
+        3120
       ],
-      "id": "9211dafc-c37a-4d0e-83c8-a7b373526abd",
+      "id": "a407e85c-fe67-4895-b4b1-4feb38a94f89",
       "name": "Switch1"
     },
     {
@@ -499,10 +487,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        -624,
-        2288
+        -2240,
+        2384
       ],
-      "id": "657c29f4-6dc3-4e15-8eab-13b241c76bfe",
+      "id": "45a03bcd-90a6-4ad1-8007-f65743f741ed",
       "name": "Merge4"
     },
     {
@@ -573,10 +561,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        1168,
-        2240
+        -448,
+        2336
       ],
-      "id": "dba0de09-04b5-494a-bef3-a4db3bd40ae4",
+      "id": "919d5163-46e1-414a-bc9b-11694dc5b117",
       "name": "Switch Imagem ou Collecting"
     },
     {
@@ -586,10 +574,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1392,
-        2352
+        -224,
+        2448
       ],
-      "id": "56d2e3d3-fb26-4551-818b-dc2b07ec9b69",
+      "id": "570cae9f-8bf5-4981-be8d-2deff2c0667a",
       "name": "Prep Upload Aranda"
     },
     {
@@ -600,20 +588,14 @@
           "language": "pt"
         }
       },
-      "id": "d5ebe32d-641c-4750-aa69-4472b7aed321",
+      "id": "89c41278-46ea-4e4e-82c4-92ae67405735",
       "name": "OpenAI",
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 1.4,
       "position": [
-        -1072,
-        3360
-      ],
-      "credentials": {
-        "openAiApi": {
-          "id": "Dq1bDwp43FeWf2cr",
-          "name": "OPENAI - ti.admbr"
-        }
-      }
+        -2688,
+        3456
+      ]
     },
     {
       "parameters": {
@@ -629,13 +611,13 @@
         },
         "options": {}
       },
-      "id": "dee4f8e1-dc44-4706-867d-e68f1b75515d",
+      "id": "1161bd6b-fafb-4929-aeb2-f425d7b1ba00",
       "name": "Separa o Base 64",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -1520,
-        3360
+        -3136,
+        3456
       ]
     },
     {
@@ -646,13 +628,13 @@
           "mimeType": "audio/mp3"
         }
       },
-      "id": "e53f156c-940e-48f1-a22d-a22fdf1295f5",
+      "id": "d5fa6474-5388-4f53-95b7-aa2a5d351623",
       "name": "Convert to MP3",
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.1,
       "position": [
-        -1296,
-        3360
+        -2912,
+        3456
       ]
     },
     {
@@ -675,13 +657,13 @@
         },
         "options": {}
       },
-      "id": "7ee6a869-40fb-40e9-8e3d-731ed14a6b87",
+      "id": "1a092264-de1c-4048-9328-bc92c4932def",
       "name": "Destaca transcricao audio",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -848,
-        3360
+        -2464,
+        3456
       ]
     },
     {
@@ -700,17 +682,11 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1.1,
       "position": [
-        -1072,
-        3648
+        -2688,
+        3744
       ],
-      "id": "5e8a62ce-d9ae-40ec-a3fe-d993d7a1d380",
-      "name": "Analyze document",
-      "credentials": {
-        "googlePalmApi": {
-          "id": "6xwzEm1ldHftHuhC",
-          "name": "GEMINI - Automacao"
-        }
-      }
+      "id": "b828cba0-2369-479f-9197-2b5cc8f1d449",
+      "name": "Analyze document"
     },
     {
       "parameters": {
@@ -726,13 +702,13 @@
         },
         "options": {}
       },
-      "id": "a144882a-ea87-4a02-9eda-88763d130c95",
+      "id": "404afc2c-7351-4cb1-9aa8-edffe3f32537",
       "name": "Separa o Base 65",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -1520,
-        3600
+        -3136,
+        3696
       ]
     },
     {
@@ -743,13 +719,13 @@
           "mimeType": "application/pdf"
         }
       },
-      "id": "3e346e24-c8ab-4d60-8863-55f689ef46b4",
+      "id": "cec5b6b9-ab91-421e-9772-92f9ce12adf8",
       "name": "Convert to PDF",
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.1,
       "position": [
-        -1296,
-        3600
+        -2912,
+        3696
       ]
     },
     {
@@ -772,13 +748,13 @@
         },
         "options": {}
       },
-      "id": "0d467259-9ec4-49ab-a670-3a8edfa7770f",
+      "id": "a6ee746c-e5b5-479d-99be-6e4acf78d1c4",
       "name": "Destaca transcricao audio1",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -848,
-        3648
+        -2464,
+        3744
       ]
     },
     {
@@ -795,13 +771,13 @@
         },
         "options": {}
       },
-      "id": "0bb53f29-3584-4020-a6f0-0e378a3acb6f",
+      "id": "cec0e90f-b0f3-4507-a89f-56ce707d8aa0",
       "name": "Separa o Base 66",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1168,
-        3216
+        -448,
+        3312
       ]
     },
     {
@@ -815,10 +791,10 @@
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.1,
       "position": [
-        1392,
-        3216
+        -224,
+        3312
       ],
-      "id": "c3298ed5-9674-45af-8f1d-6c15a5807dc1",
+      "id": "ee52cbe2-9561-443b-bd04-5d26835a4543",
       "name": "Convert to File"
     },
     {
@@ -844,10 +820,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -848,
-        2752
+        -2464,
+        2848
       ],
-      "id": "b5289d19-959c-4bf0-a169-105f0beec70f",
+      "id": "83f53e52-69c2-4244-ad03-aa1587d91ff3",
       "name": "Edit Fields1"
     },
     {
@@ -859,10 +835,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        2064,
-        2112
+        448,
+        2208
       ],
-      "id": "50694641-233b-4faa-900c-abdda6e2b973",
+      "id": "3f139993-de03-4d8d-829f-de4bdce5839c",
       "name": "Merge9"
     },
     {
@@ -872,10 +848,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2576,
-        -96
+        960,
+        0
       ],
-      "id": "455b111d-8ce6-4c98-8ac1-565c532da245",
+      "id": "8000a71a-2a56-416f-9bcf-143aed5f473a",
       "name": "Payload - Tratamento Para envio da API - Create"
     },
     {
@@ -894,18 +870,12 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        2864,
-        -96
+        1248,
+        0
       ],
-      "id": "f0fabb54-78a2-4997-b7be-d55851f57e50",
+      "id": "2d149506-6b2b-4bd4-b6d1-4f41223f43bd",
       "name": "ARAN - Criar Chamado",
-      "retryOnFail": true,
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "1r8VZeUyHw8kRDu6",
-          "name": "ARANDA - HEADER"
-        }
-      }
+      "retryOnFail": true
     },
     {
       "parameters": {
@@ -934,17 +904,11 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        3088,
-        336
+        1472,
+        432
       ],
-      "id": "4f0d1392-3537-451a-b834-154d21f65fec",
-      "name": "SUPA - Grava Case-ID e ArandaTicket",
-      "credentials": {
-        "supabaseApi": {
-          "id": "dozsrf1lw0Yh7UPi",
-          "name": "SUPABASE - IMBERA PRODUCTION"
-        }
-      }
+      "id": "538addde-8eb8-4164-8b17-e5c3538b0a9f",
+      "name": "SUPA - Grava Case-ID e ArandaTicket"
     },
     {
       "parameters": {
@@ -960,17 +924,11 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        3536,
-        128
+        1920,
+        224
       ],
-      "id": "064a871a-a403-4ea4-b161-b6ed640fd7dd",
-      "name": "EVOL - Envio de Mensagem de Criação",
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "OySbHXkQ7yLzCZSY",
-          "name": "EVOL - HEADER"
-        }
-      }
+      "id": "ca4038b3-cd07-4f4b-846b-99439b025342",
+      "name": "EVOL - Envio de Mensagem de Criação"
     },
     {
       "parameters": {
@@ -979,10 +937,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3312,
-        128
+        1696,
+        224
       ],
-      "id": "2e763409-bd9d-4ee5-bfe0-0052d04705f5",
+      "id": "c1d0f30e-186c-492d-9dbb-9174b163c426",
       "name": "Payload - Escolha Idioma e Preparação Mensagem"
     },
     {
@@ -992,10 +950,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        3088,
-        112
+        1472,
+        208
       ],
-      "id": "79623ba8-7fa1-4624-a2ba-463604a9a0ba",
+      "id": "23ab81a7-72f1-4b92-a9fa-c968b636fe50",
       "name": "Merge - Envio ao grupo e db"
     },
     {
@@ -1025,27 +983,21 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        2064,
-        -96
+        448,
+        0
       ],
-      "id": "c8d70726-4995-4d8c-ab21-f0c984a45783",
-      "name": "SUPA - Salva Informações no DB",
-      "credentials": {
-        "supabaseApi": {
-          "id": "dozsrf1lw0Yh7UPi",
-          "name": "SUPABASE - IMBERA PRODUCTION"
-        }
-      }
+      "id": "0aa86dca-3d78-4181-ac01-32647531dabc",
+      "name": "SUPA - Salva Informações no DB"
     },
     {
       "parameters": {},
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        2288,
-        -96
+        672,
+        0
       ],
-      "id": "193f8a4f-203c-4c64-8fb4-a91afc76fd6b",
+      "id": "91e6cc78-0eef-44ed-87ba-a16af5216a69",
       "name": "Merge - Informações para o Payload de Atualização"
     },
     {
@@ -1055,10 +1007,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1840,
-        -96
+        224,
+        0
       ],
-      "id": "2494d5b1-8a61-4f29-b2f0-7f817ad757d7",
+      "id": "5f8d0de1-8940-421b-8a46-8aeaa3e90719",
       "name": "Payload - Preparação de Envio para DB"
     },
     {
@@ -1066,10 +1018,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        1616,
-        -96
+        0,
+        0
       ],
-      "id": "889a894e-35b3-4b9d-b24b-4484fcc3d2ed",
+      "id": "41de2786-c4bb-48c9-a01b-a9c8c7360031",
       "name": "Merge - Informações sobre o chamado e Abertura"
     },
     {
@@ -1086,17 +1038,11 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        1888,
-        288
+        272,
+        384
       ],
-      "id": "28348ceb-748f-4cd7-93de-4e5cfb6e4c87",
-      "name": "EVOL - Mensagem para Chamado já ativo",
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "1r8VZeUyHw8kRDu6",
-          "name": "ARANDA - HEADER"
-        }
-      }
+      "id": "32d2180d-85ea-4116-902d-f10c6459a9ee",
+      "name": "EVOL - Mensagem para Chamado já ativo"
     },
     {
       "parameters": {
@@ -1105,10 +1051,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1392,
-        240
+        -224,
+        336
       ],
-      "id": "da73a1fc-f800-46bf-b63f-d11c576dee2c",
+      "id": "00bd4f67-0f16-41cd-bf17-52e0f9a6eb7b",
       "name": "Payload - Aplicação de Padrão para abertura"
     },
     {
@@ -1116,10 +1062,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        3536,
-        1328
+        1920,
+        1424
       ],
-      "id": "1a18b350-b8b0-4f32-a651-e17afb27d15a",
+      "id": "89b9328c-4f7a-4592-b480-bdeb045a8e6a",
       "name": "Merge - Preparação para \"Terminar\" o chamado"
     },
     {
@@ -1129,10 +1075,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3760,
-        1328
+        2144,
+        1424
       ],
-      "id": "655856d2-d1ee-40ad-a380-b2d024695487",
+      "id": "e3682de8-b99e-40ea-b77c-4bec7e5a7ce0",
       "name": "Payload - Estruturação do JSON de envio"
     },
     {
@@ -1151,19 +1097,13 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        3984,
-        1328
+        2368,
+        1424
       ],
-      "id": "db432edb-64df-4ab5-b5ed-17494d07b1df",
+      "id": "b1a83da3-4816-4f78-a098-270dda3f121d",
       "name": "ARAN - Finalizar Chamados",
       "retryOnFail": true,
-      "waitBetweenTries": 5000,
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "1r8VZeUyHw8kRDu6",
-          "name": "ARANDA - HEADER"
-        }
-      }
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -1176,10 +1116,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        4208,
-        1248
+        2592,
+        1344
       ],
-      "id": "bb24f359-1d5f-48e0-9e82-fe0a813fad53",
+      "id": "19128d20-b596-49f4-9cac-cdb022f67c69",
       "name": "Merge - Recolhimento de Informações - Chamado Cerrado"
     },
     {
@@ -1198,18 +1138,12 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        4656,
-        1248
+        3040,
+        1344
       ],
-      "id": "db5ff3f7-af14-415b-8f95-05cb757d07a7",
+      "id": "5445b603-3376-4188-873c-9a125e9a5880",
       "name": "ARAN - Chamado Cerrado",
-      "retryOnFail": true,
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "1r8VZeUyHw8kRDu6",
-          "name": "ARANDA - HEADER"
-        }
-      }
+      "retryOnFail": true
     },
     {
       "parameters": {
@@ -1223,17 +1157,11 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        4432,
-        1248
+        2816,
+        1344
       ],
-      "id": "9f7c4884-c929-4533-940d-831aa8cf3d6b",
-      "name": "ARAN - Buscar chamado para Estruturação de JSON",
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "1r8VZeUyHw8kRDu6",
-          "name": "ARANDA - HEADER"
-        }
-      }
+      "id": "9a1d0be4-a38d-4123-9380-29ac02be1dbc",
+      "name": "ARAN - Buscar chamado para Estruturação de JSON"
     },
     {
       "parameters": {
@@ -1247,17 +1175,11 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        3312,
-        1392
+        1696,
+        1488
       ],
-      "id": "cf475367-c07d-49f9-8c6f-cda9471765b6",
-      "name": "ARAN - Buscar - Chamados na API",
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "1r8VZeUyHw8kRDu6",
-          "name": "ARANDA - HEADER"
-        }
-      }
+      "id": "49afdcaa-4111-4394-9e5c-b3e092a9771e",
+      "name": "ARAN - Buscar - Chamados na API"
     },
     {
       "parameters": {
@@ -1286,27 +1208,21 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        4880,
-        1200
+        3264,
+        1296
       ],
-      "id": "bc83c779-c3fb-49ae-abd8-92bd58bb3acd",
-      "name": "SUPA - Fechar chamado no DB",
-      "credentials": {
-        "supabaseApi": {
-          "id": "dozsrf1lw0Yh7UPi",
-          "name": "SUPABASE - IMBERA PRODUCTION"
-        }
-      }
+      "id": "7ba753f4-3790-4d51-9df2-c1469a3ce89e",
+      "name": "SUPA - Fechar chamado no DB"
     },
     {
       "parameters": {},
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        4880,
-        1488
+        3264,
+        1584
       ],
-      "id": "265b90a7-0efc-4083-b065-75776fdd0573",
+      "id": "3f55da29-6ace-4aa3-b225-5cba725f8024",
       "name": "Merge - Agrupamento de Informações para envio da Mensagem do Whatsapp"
     },
     {
@@ -1323,17 +1239,11 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        5328,
-        1488
+        3712,
+        1584
       ],
-      "id": "f6a329f6-faf0-420d-8885-a94c314ba023",
-      "name": "EVOL - Envio de Mensagem Finalização",
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "OySbHXkQ7yLzCZSY",
-          "name": "EVOL - HEADER"
-        }
-      }
+      "id": "783030dd-009f-4df1-bd1e-e3d4dd6695fc",
+      "name": "EVOL - Envio de Mensagem Finalização"
     },
     {
       "parameters": {
@@ -1342,10 +1252,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        5104,
-        1488
+        3488,
+        1584
       ],
-      "id": "7ad11b53-4045-4a89-92e7-2fece2043df4",
+      "id": "78c222dc-376f-4463-9749-51b336f005e5",
       "name": "Payload - Estruturação de Mensagem de Fechamento de Chamado"
     },
     {
@@ -1353,10 +1263,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        2864,
-        1344
+        1248,
+        1440
       ],
-      "id": "a816ab33-1f5f-4ba7-85f4-644f69252983",
+      "id": "ddf6274d-f71b-444f-94b2-c05e836adbe5",
       "name": "Merge - Junção de Informações sobre Descr e Solution"
     },
     {
@@ -1370,10 +1280,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        2512,
-        928
+        896,
+        1024
       ],
-      "id": "886d7637-ce07-4f1b-9dc6-0528be363ad0",
+      "id": "ea14a93e-5daa-4a5a-a97a-e02c710c2071",
       "name": "Analise e Geração de Resumo sobre Descr e Soluti"
     },
     {
@@ -1383,10 +1293,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2288,
-        1040
+        672,
+        1136
       ],
-      "id": "d6857e02-11ed-40c2-a7da-cc51ea36a557",
+      "id": "d5764b14-3838-4d86-bd8b-d267af82b249",
       "name": "Payload - Envio de Informações necessarias para AI"
     },
     {
@@ -1433,18 +1343,12 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        1840,
-        992
+        224,
+        1088
       ],
-      "id": "f59f1286-aa51-4990-9d5c-b9d5a6cbc588",
+      "id": "d88a0ab3-e859-4bc1-986e-4fd33d0b4d26",
       "name": "SUPA - Busca de Ultimas mensagens dos chamados",
-      "alwaysOutputData": true,
-      "credentials": {
-        "supabaseApi": {
-          "id": "dozsrf1lw0Yh7UPi",
-          "name": "SUPABASE - IMBERA PRODUCTION"
-        }
-      }
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -1453,10 +1357,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1840,
-        1824
+        224,
+        1920
       ],
-      "id": "78af02fb-ee72-4dba-8dfc-bfa8b0a21677",
+      "id": "adb8cee6-ec93-4d3c-acc1-d8df396ae684",
       "name": "Payload - Estruturação de JSON para Chamados não criados"
     },
     {
@@ -1473,17 +1377,11 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        2064,
-        1824
+        448,
+        1920
       ],
-      "id": "447b0ce4-d9ed-405d-9384-8ea2ab7b3f95",
-      "name": "EVOL - Mensagens Chamados não criados",
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "OySbHXkQ7yLzCZSY",
-          "name": "EVOL - HEADER"
-        }
-      }
+      "id": "2841805a-7167-4d59-8331-d37367038b0c",
+      "name": "EVOL - Mensagens Chamados não criados"
     },
     {
       "parameters": {
@@ -1492,10 +1390,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2288,
-        2112
+        672,
+        2208
       ],
-      "id": "6b1d9481-6daa-49e1-8be7-0e9dcc643a75",
+      "id": "5cef7000-8c22-40d8-b28b-d0d3507ccc63",
       "name": "Payload - Preparação Envio de Foto - Notificação"
     },
     {
@@ -1546,18 +1444,12 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        1392,
-        1472
+        -224,
+        1568
       ],
-      "id": "476d80cd-13fc-4e07-8cea-790f7ba9d35d",
+      "id": "4de0c296-cf75-4a15-86b0-1d2bf129ce27",
       "name": "SUPA - Buscar ID do grupo",
-      "alwaysOutputData": true,
-      "credentials": {
-        "supabaseApi": {
-          "id": "dozsrf1lw0Yh7UPi",
-          "name": "SUPABASE - IMBERA PRODUCTION"
-        }
-      }
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -1603,18 +1495,12 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1392,
-        2144
+        -224,
+        2240
       ],
-      "id": "2c5957a3-a2f6-4f95-8421-c181e0e297d7",
+      "id": "9709ae93-5851-4d5b-baf1-9e872a351877",
       "name": "SUPA - Buscar Ticket Ativo",
-      "alwaysOutputData": true,
-      "credentials": {
-        "supabaseApi": {
-          "id": "dozsrf1lw0Yh7UPi",
-          "name": "SUPABASE - IMBERA PRODUCTION"
-        }
-      }
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -1664,17 +1550,11 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        1840,
-        2016
+        224,
+        2112
       ],
-      "id": "6fea9220-b59e-4600-8829-9fe85cfe0785",
-      "name": "ARAN - Upload de Arquivo na API",
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "1r8VZeUyHw8kRDu6",
-          "name": "ARANDA - HEADER"
-        }
-      }
+      "id": "31e75ed3-a7ea-4225-8e47-5053dc677f8f",
+      "name": "ARAN - Upload de Arquivo na API"
     },
     {
       "parameters": {
@@ -1690,17 +1570,11 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        2576,
-        2112
+        960,
+        2208
       ],
-      "id": "a1a5f318-97c8-4a1f-807e-8a7e68c3bb19",
-      "name": "EVOL - Notificar Imagem Anexada",
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "OySbHXkQ7yLzCZSY",
-          "name": "EVOL - HEADER"
-        }
-      }
+      "id": "e1c34b21-f252-4941-94e8-a2d90cbd6c51",
+      "name": "EVOL - Notificar Imagem Anexada"
     },
     {
       "parameters": {
@@ -1729,17 +1603,11 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        1616,
-        2544
+        0,
+        2640
       ],
-      "id": "39cbf055-ae92-4aa4-9e44-e33167042bbc",
-      "name": "SUPA - Cadastro de Mensagens no DB",
-      "credentials": {
-        "supabaseApi": {
-          "id": "dozsrf1lw0Yh7UPi",
-          "name": "SUPABASE - IMBERA PRODUCTION"
-        }
-      }
+      "id": "d6d7e532-a25c-41db-88ba-88929ceb68f8",
+      "name": "SUPA - Cadastro de Mensagens no DB"
     },
     {
       "parameters": {
@@ -1748,10 +1616,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1392,
-        2544
+        -224,
+        2640
       ],
-      "id": "62f1f196-5c2b-4101-8c2f-a5a4f99523e8",
+      "id": "7dfebf39-1edd-43e9-8b23-7e150a7adf2e",
       "name": "Payload de Estruturação de Mensagens"
     },
     {
@@ -1794,18 +1662,12 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -176,
-        2496
+        -1792,
+        2592
       ],
-      "id": "d7a7bd28-8924-481b-9e6c-43b392978b64",
+      "id": "6809f68b-94ae-4cf8-a03c-49e79748f2cc",
       "name": "SUPA - Buscar Ticket Ativo1",
-      "alwaysOutputData": true,
-      "credentials": {
-        "supabaseApi": {
-          "id": "dozsrf1lw0Yh7UPi",
-          "name": "SUPABASE - IMBERA PRODUCTION"
-        }
-      }
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -1835,10 +1697,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        944,
-        1472
+        -672,
+        1568
       ],
-      "id": "060bf162-ced0-49dd-99b6-14a65c23e307",
+      "id": "67bff52a-e9d5-4755-bdcf-551085c0759c",
       "name": "Detectar #Close#"
     },
     {
@@ -1880,10 +1742,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        1168,
-        1472
+        -448,
+        1568
       ],
-      "id": "f761c9f6-754b-4399-8262-d0c171728d7e",
+      "id": "ddae45be-9c22-44ac-a2f2-0ddeea2c8d28",
       "name": "Filter - Imagem e Audio"
     },
     {
@@ -1914,10 +1776,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        1616,
-        1472
+        0,
+        1568
       ],
-      "id": "cd693492-c070-44dd-94b4-5293b2affb8d",
+      "id": "df94b4be-75d0-43a6-897e-0ba703531f7a",
       "name": "Validação se possui Ticket Ativo"
     },
     {
@@ -1949,24 +1811,24 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        48,
-        2496
+        -1568,
+        2592
       ],
-      "id": "e98b35ae-eb68-480b-8672-66fca3bd02d6",
+      "id": "99fdc915-0a05-47ae-ac2d-aaba4d08bd49",
       "name": "Separação de Informações do DB",
       "alwaysOutputData": true
     },
     {
       "parameters": {
-        "jsCode": "// ============================================================\n// MAPEAMENTO: groupJid → idioma\n// Adicione novos grupos aqui conforme necessário\n// ============================================================\nconst GROUP_LANG_MAP = {\n  \"120363xxxxxxxx1@g.us\": \"pt\", // Grupo Brasil\n  \"120363425589076485@g.us\": \"es\", // Grupo México\n  \"120363424210222326@g.us\": \"en\", // Grupo USA\n  // Adicione mais grupos aqui...\n};\n\nfunction getGroupLang(groupJid) {\n  return GROUP_LANG_MAP[groupJid] || \"pt\"; // padrão: português\n}\n\n// ============================================================\n\nconst items = $input.all();\nconst results = [];\n\nfor (const item of items) {\n  const raw = item.json;\n  const innerBody = raw.raw || {};\n  const data      = innerBody.data || {};\n  const key       = data.key || {};\n\n  const messageText = (\n    raw.text ||\n    raw.messageText ||\n    (data.message && data.message.conversation) ||\n    (data.message && data.message.extendedTextMessage && data.message.extendedTextMessage.text) ||\n    \"\"\n  ).trim();\n\n  const normalized = {\n    groupJid:       raw.groupJid    || key.remoteJid    || \"\",\n    groupKey:       raw.groupKey    || (key.remoteJid ? key.remoteJid.split(\"@\")[0] : \"\"),\n    sender:         raw.sender      || innerBody.sender || \"\",\n    senderPhone:    raw.senderPhone || (key.participantAlt ? key.participantAlt.replace(\"@s.whatsapp.net\", \"\") : \"\") || \"\",\n    senderName:     raw.senderName  || data.pushName    || \"Desconhecido\",\n    messageId:      raw.messageId   || key.id           || \"\",\n    messageText:    messageText,\n    messageType:    raw.messageType || data.messageType || \"\",\n    timestamp:      raw.timestamp   || data.messageTimestamp || null,\n    arandaTicketId: raw.arandaTicketId || null,\n    openedBy:       raw.openedBy    || (key.participantAlt ? key.participantAlt.replace(\"@s.whatsapp.net\", \"\") : \"\") || \"\",\n    openedByName:   raw.openedByName || data.pushName   || \"\",\n    openedAt:       raw.openedAt    || null,\n    closedBy:       raw.closedBy    || null,\n    closedAt:       raw.closedAt    || null,\n    messages:       raw.messages    || \"[]\",\n    log:            raw.log         || \"[]\",\n  };\n\n  const hasTicketActive = typeof raw.arandaTicketId === \"string\" &&\n                          raw.arandaTicketId.toUpperCase().startsWith(\"RF-TI\");\n\n  const isClose  = /^#+\\s*fechar\\s*#+$/i.test(messageText.trim()) || /^#+\\s*close\\s*#+$/i.test(messageText.trim());\n\n  const isCreate = /^#+\\s*abrir\\s*#+$/i.test(messageText.trim())  ||\n                   /^#+\\s*create\\s*#+$/i.test(messageText.trim()) ||\n                   /^#+\\s*open\\s*#+$/i.test(messageText.trim()) ||\n\n                  \n                   /^#+\\s*criar\\s*#+$/i.test(messageText.trim());\n\n  const isBotImb = /Suporte TI - Imbera Brasil/i.test(normalized.senderName) ||\n                   /Suporte TI - Imbera Brasil/i.test(normalized.groupJid)    ||\n                   /Suporte TI - Imbera Brasil/i.test(raw.groupName || \"\")    ||\n                   /Suporte TI - Imbera Brasil/i.test(messageText);\n\n  let status;\n  if (isBotImb) {\n    status = \"BotImb\";\n  } else if (isClose) {\n    status = \"Ending\";\n  } else if (isCreate) {\n    status = \"Create\";\n  } else {\n    const supabaseStatus = raw.status || null;\n    if (!supabaseStatus || supabaseStatus === \"\") {\n      status = \"HasNoTicketActive\";\n    } else if (supabaseStatus.toUpperCase() === \"COLLECTING\") {\n      status = \"Collecting\";\n    } else {\n      status = \"Ignore\";\n    }\n  }\n\n  // ✅ Nova chave: lang detectada pelo groupJid\n  const lang = getGroupLang(normalized.groupJid);\n\n  results.push({\n    json: {\n      ...normalized,\n      hasTicketActive,\n      status,\n      lang, // \"pt\" | \"es\" | \"en\"\n    }\n  });\n}\n\nreturn results;"
+        "jsCode": "// ============================================================\n// MAPEAMENTO: groupJid → idioma\n// Adicione novos grupos aqui conforme necessário\n// ============================================================\nconst GROUP_LANG_MAP = {\n  \"120363*********@g.us\": \"pt\", // Grupo Brasil\n  \"120363*********@g.us\": \"es\", // Grupo México\n  \"1203634*********@g.us\": \"en\", // Grupo USA\n  // Adicione mais grupos aqui...\n};\n\nfunction getGroupLang(groupJid) {\n  return GROUP_LANG_MAP[groupJid] || \"pt\"; // padrão: português\n}\n\n// ============================================================\n\nconst items = $input.all();\nconst results = [];\n\nfor (const item of items) {\n  const raw = item.json;\n  const innerBody = raw.raw || {};\n  const data      = innerBody.data || {};\n  const key       = data.key || {};\n\n  const messageText = (\n    raw.text ||\n    raw.messageText ||\n    (data.message && data.message.conversation) ||\n    (data.message && data.message.extendedTextMessage && data.message.extendedTextMessage.text) ||\n    \"\"\n  ).trim();\n\n  const normalized = {\n    groupJid:       raw.groupJid    || key.remoteJid    || \"\",\n    groupKey:       raw.groupKey    || (key.remoteJid ? key.remoteJid.split(\"@\")[0] : \"\"),\n    sender:         raw.sender      || innerBody.sender || \"\",\n    senderPhone:    raw.senderPhone || (key.participantAlt ? key.participantAlt.replace(\"@s.whatsapp.net\", \"\") : \"\") || \"\",\n    senderName:     raw.senderName  || data.pushName    || \"Desconhecido\",\n    messageId:      raw.messageId   || key.id           || \"\",\n    messageText:    messageText,\n    messageType:    raw.messageType || data.messageType || \"\",\n    timestamp:      raw.timestamp   || data.messageTimestamp || null,\n    arandaTicketId: raw.arandaTicketId || null,\n    openedBy:       raw.openedBy    || (key.participantAlt ? key.participantAlt.replace(\"@s.whatsapp.net\", \"\") : \"\") || \"\",\n    openedByName:   raw.openedByName || data.pushName   || \"\",\n    openedAt:       raw.openedAt    || null,\n    closedBy:       raw.closedBy    || null,\n    closedAt:       raw.closedAt    || null,\n    messages:       raw.messages    || \"[]\",\n    log:            raw.log         || \"[]\",\n  };\n\n  const hasTicketActive = typeof raw.arandaTicketId === \"string\" &&\n                          raw.arandaTicketId.toUpperCase().startsWith(\"RF-TI\");\n\n  const isClose  = /^#+\\s*fechar\\s*#+$/i.test(messageText.trim()) || /^#+\\s*close\\s*#+$/i.test(messageText.trim());\n\n  const isCreate = /^#+\\s*abrir\\s*#+$/i.test(messageText.trim())  ||\n                   /^#+\\s*create\\s*#+$/i.test(messageText.trim()) ||\n                   /^#+\\s*open\\s*#+$/i.test(messageText.trim()) ||\n\n                  \n                   /^#+\\s*criar\\s*#+$/i.test(messageText.trim());\n\n  const isBotImb = /Suporte TI - Imbera Brasil/i.test(normalized.senderName) ||\n                   /Suporte TI - Imbera Brasil/i.test(normalized.groupJid)    ||\n                   /Suporte TI - Imbera Brasil/i.test(raw.groupName || \"\")    ||\n                   /Suporte TI - Imbera Brasil/i.test(messageText);\n\n  let status;\n  if (isBotImb) {\n    status = \"BotImb\";\n  } else if (isClose) {\n    status = \"Ending\";\n  } else if (isCreate) {\n    status = \"Create\";\n  } else {\n    const supabaseStatus = raw.status || null;\n    if (!supabaseStatus || supabaseStatus === \"\") {\n      status = \"HasNoTicketActive\";\n    } else if (supabaseStatus.toUpperCase() === \"COLLECTING\") {\n      status = \"Collecting\";\n    } else {\n      status = \"Ignore\";\n    }\n  }\n\n  // ✅ Nova chave: lang detectada pelo groupJid\n  const lang = getGroupLang(normalized.groupJid);\n\n  results.push({\n    json: {\n      ...normalized,\n      hasTicketActive,\n      status,\n      lang, // \"pt\" | \"es\" | \"en\"\n    }\n  });\n}\n\nreturn results;"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        496,
-        2336
+        -1120,
+        2432
       ],
-      "id": "f1ecd17e-0874-4ef4-aacc-0a86e211d1ac",
+      "id": "822c7671-efb6-428d-8b36-2ddcc2e13595",
       "name": "Tratamento de Informações e direcionamento de chaves"
     },
     {
@@ -1976,10 +1838,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1968,
-        3072
+        -3584,
+        3168
       ],
-      "id": "d6c82d7f-7bc6-4e64-bb9f-3cf48c720bd8",
+      "id": "00dcd0ac-8802-4713-9b48-1e0be256aaae",
       "name": "Primeiro Tratamento de Informações"
     },
     {
@@ -2000,10 +1862,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        48,
-        2240
+        -1568,
+        2336
       ],
-      "id": "8928a4d3-d61d-434d-b515-646dc8e18604",
+      "id": "8751197e-fbce-4248-9938-26bedbc318db",
       "name": "Separação de Texto da Mensagem"
     },
     {
@@ -2137,10 +1999,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        720,
-        2288
+        -896,
+        2384
       ],
-      "id": "400e5cd2-8a6e-4fe0-bf83-66e1066994d9",
+      "id": "3bf3e517-e70b-4bae-8a6e-d856a332b6be",
       "name": "Switch - Encaminhamento de função"
     },
     {
@@ -2278,10 +2140,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        944,
-        2288
+        -672,
+        2384
       ],
-      "id": "453ea451-dcd2-44fa-86e4-679310b50898",
+      "id": "7d6b96a9-070b-4bf8-8c16-f953df0f0f11",
       "name": "Switch - Coleta de Arquivos"
     },
     {
@@ -2296,10 +2158,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        1616,
-        1968
+        0,
+        2064
       ],
-      "id": "51be451c-6123-439f-9799-f751db9b6a63",
+      "id": "3ff31da7-8679-4f5d-b248-ba01fa04e992",
       "name": "Merge - Upload de Arquivos para a API"
     },
     {
@@ -2316,17 +2178,11 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        2592,
-        752
+        976,
+        848
       ],
-      "id": "0ffb20a5-a8a2-43be-8b76-9be58190c43e",
-      "name": "OpenAI Chat Model1",
-      "credentials": {
-        "openAiApi": {
-          "id": "Dq1bDwp43FeWf2cr",
-          "name": "OPENAI - ti.admbr"
-        }
-      }
+      "id": "ed93c581-be32-4c90-93c0-470a9a8f477f",
+      "name": "OpenAI Chat Model1"
     },
     {
       "parameters": {
@@ -2339,10 +2195,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        2528,
-        512
+        912,
+        608
       ],
-      "id": "9d19174b-5f46-447e-a750-a530fb505d2c",
+      "id": "98e88f13-cb58-4a7c-95bb-1406325c10dd",
       "name": "Analise e Geração de Resumo sobre Descr e Soluti1"
     },
     {
@@ -2352,10 +2208,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2288,
-        640
+        672,
+        736
       ],
-      "id": "6559bc7f-a089-4c6a-9f97-7538b0606920",
+      "id": "311f5004-d0ff-4047-965b-728d5716844c",
       "name": "Payload - Envio de Informações necessarias para AI1"
     },
     {
@@ -2372,17 +2228,11 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        2592,
-        1664
+        976,
+        1760
       ],
-      "id": "6d4a6442-7501-4a7d-b043-9c8404512e99",
-      "name": "OpenAI Chat Model2",
-      "credentials": {
-        "openAiApi": {
-          "id": "Dq1bDwp43FeWf2cr",
-          "name": "OPENAI - ti.admbr"
-        }
-      }
+      "id": "4994b773-88a7-49d7-8187-7c981a885524",
+      "name": "OpenAI Chat Model2"
     },
     {
       "parameters": {
@@ -2395,10 +2245,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        2512,
-        1440
+        896,
+        1536
       ],
-      "id": "96d2c910-e368-4164-ae17-c8917ae688a4",
+      "id": "2308887a-71e2-4879-b7be-414e65003738",
       "name": "Analise e Geração de Resumo sobre Descr e Soluti2"
     },
     {
@@ -2408,10 +2258,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2288,
-        1440
+        672,
+        1536
       ],
-      "id": "a2035a51-29ff-416a-8ae2-7298f877d8c3",
+      "id": "b1aac198-5458-4d27-b800-b56179ea2e7b",
       "name": "Payload - Envio de Informações necessarias para AI2"
     },
     {
@@ -2497,10 +2347,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        2064,
-        976
+        448,
+        1072
       ],
-      "id": "521dfa0a-e6ff-47d1-bf1f-61bdec14c138",
+      "id": "3c5517f2-fbba-4ca4-8c77-a60c3582342d",
       "name": "Switch"
     },
     {
@@ -2510,10 +2360,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1184,
-        2736
+        -432,
+        2832
       ],
-      "id": "7eddabe2-dbf0-429c-9182-d8c8e5f76892",
+      "id": "2e8fab5e-8e30-40f0-81e9-cb9a570a56e6",
       "name": "Code in JavaScript"
     },
     {
@@ -2530,17 +2380,11 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        1376,
-        2736
+        -240,
+        2832
       ],
-      "id": "e1e46723-a365-4b54-8183-c2aea96da3df",
-      "name": "EVOL - Notificar Imagem Anexada1",
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "OySbHXkQ7yLzCZSY",
-          "name": "EVOL - HEADER"
-        }
-      }
+      "id": "82d47bf6-c653-49be-8446-8facf9fd0732",
+      "name": "EVOL - Notificar Imagem Anexada1"
     }
   ],
   "connections": {
@@ -2781,8 +2625,7 @@
             "type": "main",
             "index": 0
           }
-        ],
-        []
+        ]
       ]
     },
     "Prep Upload Aranda": {
@@ -3740,7 +3583,6 @@
     ]
   },
   "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "0ee9f06d79325eef81a071c8e3afe27e44788748ae212b057dc1c760066d0e58"
+    "instanceId": "ceb9c8d5d1f941fa12fd523500309eed3b74c05148509041641b3c0173f578bc"
   }
 }
