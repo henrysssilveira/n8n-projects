@@ -1,0 +1,3746 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "avbot",
+        "options": {
+          "responseData": "Success"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2192,
+        3072
+      ],
+      "id": "d4d01d8d-768d-4159-9f4e-d6da2c3de94f",
+      "name": "Webhook1",
+      "webhookId": "4d897c0a-114d-407b-ba7a-d42610fbb8e5"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $('Primeiro Tratamento de Informações').item.json;\nconst data = body.data || {};\n\nconst textFromMessage = (\n  (data.message && data.message.conversation) ||\n  (data.message && data.message.text) ||\n  (data.message && data.message.extendedTextMessage && data.message.extendedTextMessage.text) ||\n  ''\n).trim();\n\nconst textFromImage = ($json && $json.mensagem) || '';\n\nconst text = textFromImage || textFromMessage;\n\nconst remoteJid = ($json && $json.remoteJid) || '';\nconst keyRemoteJid = (data.key && data.key.remoteJid) || '';\nconst groupJid = remoteJid || keyRemoteJid || '';\nconst groupKey = groupJid.split('@')[0];\n\nconst sender =\n  (data.key && data.key.participantAlt) ||\n  (data.key && data.key.participant) ||\n  body.sender ||\n  '';\n\nconst senderPhone = sender.split('@')[0];\nconst messageId = (data.key && data.key.id) || '';\n\nconst ts = data.messageTimestamp;\nconst timestamp = typeof ts === 'number'\n  ? (ts < 2e12 ? ts * 1000 : ts)\n  : (ts ? Number(ts) * 1000 : Date.now());\n\nconst pushName = data.pushName || 'Desconhecido';\n\nreturn [{\n  json: {\n    text,\n    groupJid,\n    groupKey,\n    sender,\n    senderPhone,\n    senderName: pushName,\n    messageId,\n    timestamp,\n    raw: body,\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        2336
+      ],
+      "id": "2ecc3d78-5770-4269-999f-2833cffcad0b",
+      "name": "Normalize Payload2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "detect-abrir",
+              "leftValue": "={{ $json.messageText.toLowerCase() }}",
+              "rightValue": "#open#",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "3e94b925-2b75-4adb-aa66-98a4bbd7694a",
+      "name": "Detect #AbrirChamado#1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        944,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "no-active",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "={{ true }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "looseTypeValidation": true
+        }
+      },
+      "id": "fda49d24-824b-4462-9ccb-73b5277209b5",
+      "name": "IF (No Active Ticket)1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1168,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {
+          "includeUnpaired": true
+        }
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        272,
+        2336
+      ],
+      "id": "2e8672e4-0ef1-44ce-8d59-a4910a149705",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6b43e872-c051-47fc-b88f-d929d05d665d",
+              "name": "senderPhone",
+              "value": "={{ $json.senderPhone }}",
+              "type": "string"
+            },
+            {
+              "id": "3c4c9570-2fbc-480d-838b-4f4877b3b324",
+              "name": "senderName",
+              "value": "={{ $json.senderName }}",
+              "type": "string"
+            },
+            {
+              "id": "4040ede9-371d-4849-820d-88388c0b486f",
+              "name": "groupJid",
+              "value": "={{ $json.groupJid }}",
+              "type": "string"
+            },
+            {
+              "id": "dd64b39e-b380-4a9b-8eb6-6fba434a21b5",
+              "name": "messageId",
+              "value": "={{ $json.messageId }}",
+              "type": "string"
+            },
+            {
+              "id": "d18500b9-367d-401e-a87d-ed7a7eab2f2e",
+              "name": "messageText",
+              "value": "={{ $json.messageText }}",
+              "type": "string"
+            },
+            {
+              "id": "b4ac8ea7-f139-4356-a152-b3b8644ecaa9",
+              "name": "messageType",
+              "value": "={{ $json.messageType }}",
+              "type": "string"
+            },
+            {
+              "id": "59622db5-feac-4f6d-9c3a-377d27cc3bbe",
+              "name": "arandaTicketId",
+              "value": "={{ $json.arandaTicketId }}",
+              "type": "string"
+            },
+            {
+              "id": "0375a469-c2c8-42f3-9faa-d3e8f2897856",
+              "name": "status",
+              "value": "={{ $json.status }}",
+              "type": "string"
+            },
+            {
+              "id": "f87f3f33-4e7c-438c-8698-2f35e3fe3ae2",
+              "name": "openedByName",
+              "value": "={{ $json.openedByName }}",
+              "type": "string"
+            },
+            {
+              "id": "a653aeb4-0231-4f57-8643-5111c1f8a7a2",
+              "name": "openedBy",
+              "value": "={{ $json.openedBy }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1168,
+        2544
+      ],
+      "id": "c3e8b3bc-c6f9-4160-bede-2e09a09fb189",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "o4-mini-2025-04-16",
+          "mode": "list",
+          "cachedResultName": "o4-mini-2025-04-16"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        2592,
+        1152
+      ],
+      "id": "128e9bc3-67a1-452b-bc82-66aa5477bfcc",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Dq1bDwp43FeWf2cr",
+          "name": "OPENAI - ti.admbr"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "function tryParse(value) {\n  if (!value || value === \"null\") return null;\n  try { return JSON.parse(value); } catch { return value; }\n}\nfunction extractJson(raw) {\n  if (!raw) return { descricao: null, resolucao: null };\n  const match = raw.match(/\\{[\\s\\S]*\\}/);\n  if (!match) return { descricao: null, resolucao: null };\n  try { return JSON.parse(match[0]); } catch { return { descricao: null, resolucao: null }; }\n}\n\nconst aiItem     = items.find(i => \"output\" in i.json);\nconst ticketItem = items.find(i => \"groupJid\" in i.json || \"arandaTicketId\" in i.json);\nconst msgItems   = items.filter(i => \"whatsapp_id\" in i.json || \"message_body\" in i.json);\n\nconst aiOutput   = aiItem?.json?.output ?? null;\nconst resumo     = extractJson(aiOutput);\n\nconst ticket     = ticketItem?.json ?? {};\n\nconst mensagens  = msgItems.map(i => ({\n  senderName:        i.json.sender_name   ?? i.json.senderName   ?? null,\n  senderPhone:       i.json.sender_phone  ?? i.json.senderPhone  ?? null,\n  messageBody:       i.json.message_body  ?? i.json.messageBody  ?? null,\n  messageType:       i.json.message_type  ?? i.json.messageType  ?? null,\n  mediaUrl:          i.json.media_url     ?? i.json.mediaUrl     ?? null,\n  timestampWhatsapp: i.json.timestamp_whatsapp ?? i.json.timestampWhatsapp ?? null,\n}));\n\nconst payload = {\n  id:             ticket.id             ?? null,\n  arandaTicketId: ticket.arandaTicketId ?? null,\n  \"case-id\":      (ticket[\"case-id\"] ?? ticket.caseId ?? \"\").replace(/\\D/g, \"\"),\n  groupJid:       ticket.groupJid       ?? null,\n  status:         ticket.status?.toUpperCase() ?? null,\n  openedBy:       ticket.openedBy       ?? null,\n  openedByName:   ticket.openedByName   ?? null,\n  openedAt:       ticket.openedAt       ?? null,\n  closedBy:       ticket.closedBy       ?? null,\n  closedAt:       ticket.closedAt       ?? null,\n  descricao:      resumo.descricao      ?? null,  // ← só o que aconteceu\n  resolucao:      resumo.resolucao      ?? null,  // ← como foi resolvido\n  mensagens,\n  log: tryParse(ticket.log) ?? [],\n};\n\nreturn [{ json: payload }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3088,
+        1248
+      ],
+      "id": "d0e5a235-b938-4bd0-a951-8d50ec91344c",
+      "name": "Normalizando Para Fechar Chamado"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        944,
+        2560
+      ],
+      "id": "59a772cc-0fa7-4426-8c8e-5736358445ca",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        944,
+        2752
+      ],
+      "id": "f3b8cbe6-a307-43cf-9178-f569eae08314",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "base64",
+        "options": {
+          "mimeType": "image/jpeg"
+        }
+      },
+      "id": "e9c92a26-8fb5-4b5d-b033-eab70641717c",
+      "name": "Convert to JPEG",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -1296,
+        3008
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ad8da47c-c48b-4bbd-a903-ab6c818f0718",
+              "name": "base64",
+              "value": "={{ $('Primeiro Tratamento de Informações').item.json.data.message.base64 }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "84a3200c-675e-4a19-81ec-608058c4af11",
+      "name": "Separa o Base ",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1520,
+        3008
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "GPT-4O"
+        },
+        "text": "Descreva a imagem no máximo de detalhes possível. ",
+        "inputType": "base64",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -1072,
+        3072
+      ],
+      "id": "0b26b6e2-4a80-4bd4-99aa-f75135e2c92d",
+      "name": "OpenAI2",
+      "credentials": {
+        "openAiApi": {
+          "id": "Dq1bDwp43FeWf2cr",
+          "name": "OPENAI - ti.admbr"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8e39ef5d-f537-4611-b91b-0950c6eca40e",
+              "name": "remoteJid",
+              "value": "={{ $('Primeiro Tratamento de Informações').item.json.data.key.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "id": "b4c8d780-0b6c-4998-ac15-6393d90b632d",
+              "name": "mensagem",
+              "value": "={{ $json.content }} {{ $('Primeiro Tratamento de Informações').item.json.data.message.imageMessage.caption ? '\\n\\nLegenda do Usuário: ' + $('Primeiro Tratamento de Informações').item.json.data.message.imageMessage.caption : '' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "aff7292f-55f9-4713-b422-77b3e57e40d0",
+      "name": "Destaca descricao imagem",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -848,
+        3072
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "MessageText",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "bddd8fd0-61ae-4d35-b7eb-4676dcaec7a9"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "MessageText"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "d2c6199c-db06-4035-a143-d14121812886",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "MessageImage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "MessageImage"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "4eb7764f-c5dc-4256-81f7-158ce94eadd7",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "MessageAudio",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "MessageAudio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "5fdba3aa-fc42-46d0-984b-0e9be2359c99",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "MessageDocument",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "MessageDocument"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "83975a73-5022-48a3-9cd1-0d7245a76be8",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "MessageVideo",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "MessageVideo"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -1744,
+        3024
+      ],
+      "id": "9211dafc-c37a-4d0e-83c8-a7b373526abd",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "numberInputs": 5
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -624,
+        2288
+      ],
+      "id": "657c29f4-6dc3-4e15-8eab-13b241c76bfe",
+      "name": "Merge4"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "check-image-collecting",
+                    "leftValue": "={{ $json.messageType }}",
+                    "rightValue": "={{ [\"imageMessage\", \"documentMessage\", \"videoMessage\"].includes($json.messageType) ? $json.messageType : \"\" }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  },
+                  {
+                    "id": "check-has-ticket",
+                    "leftValue": "={{ $json.arandaTicketId }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEquals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Imagem com Chamado Ativo"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "check-collecting",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "Collecting",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Coletando Dados"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1168,
+        2240
+      ],
+      "id": "dba0de09-04b5-494a-bef3-a4db3bd40ae4",
+      "name": "Switch Imagem ou Collecting"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pega o arandaTicketId do chamado ativo\nconst arandaTicketId = $json.arandaTicketId || '';\n\n// Extrai só o número (ex: RF-TI-53751 → 53751)\nconst fileItemId = arandaTicketId.replace(/\\D/g, '');\n\nconst senderName = $json.senderName || 'Usuário WhatsApp';\nconst groupJid   = $json.groupJid  || '';\n\nif (!fileItemId) {\n  throw new Error('Nenhum chamado ativo encontrado para anexar a imagem. arandaTicketId: ' + arandaTicketId);\n}\n\nreturn [{\n  json: {\n    fileItemId,\n    fileItemType: '1',\n    concept:      '0',\n    uploadType:   '0',\n    description:  'Imagem enviada via WhatsApp por ' + senderName,\n    isPublic:     'true',\n    groupJid,\n    senderName,\n    arandaTicketId,\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1392,
+        2352
+      ],
+      "id": "56d2e3d3-fb26-4551-818b-dc2b07ec9b69",
+      "name": "Prep Upload Aranda"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {
+          "language": "pt"
+        }
+      },
+      "id": "d5ebe32d-641c-4750-aa69-4472b7aed321",
+      "name": "OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.4,
+      "position": [
+        -1072,
+        3360
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "Dq1bDwp43FeWf2cr",
+          "name": "OPENAI - ti.admbr"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ad8da47c-c48b-4bbd-a903-ab6c818f0718",
+              "name": "base64",
+              "value": "={{ $('Primeiro Tratamento de Informações').item.json.data.message.base64 }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "dee4f8e1-dc44-4706-867d-e68f1b75515d",
+      "name": "Separa o Base 64",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1520,
+        3360
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "base64",
+        "options": {
+          "mimeType": "audio/mp3"
+        }
+      },
+      "id": "e53f156c-940e-48f1-a22d-a22fdf1295f5",
+      "name": "Convert to MP3",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -1296,
+        3360
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8e39ef5d-f537-4611-b91b-0950c6eca40e",
+              "name": "remoteJid",
+              "value": "={{ $('Primeiro Tratamento de Informações').item.json.data.key.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "id": "b4c8d780-0b6c-4998-ac15-6393d90b632d",
+              "name": "mensagem",
+              "value": "={{ $item(\"0\").$node[\"OpenAI\"].json[\"text\"] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7ee6a869-40fb-40e9-8e3d-731ed14a6b87",
+      "name": "Destaca transcricao audio",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -848,
+        3360
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "document",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash-lite"
+        },
+        "text": "Voce é uma analisador de documentos profundo capaz de entender todos os tipos de documentos\n\no formato de saida que voce domina é Markdown",
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -1072,
+        3648
+      ],
+      "id": "5e8a62ce-d9ae-40ec-a3fe-d993d7a1d380",
+      "name": "Analyze document",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "6xwzEm1ldHftHuhC",
+          "name": "GEMINI - Automacao"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ad8da47c-c48b-4bbd-a903-ab6c818f0718",
+              "name": "base64",
+              "value": "={{ $('Primeiro Tratamento de Informações').item.json.data.message.base64 }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a144882a-ea87-4a02-9eda-88763d130c95",
+      "name": "Separa o Base 65",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1520,
+        3600
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "base64",
+        "options": {
+          "mimeType": "application/pdf"
+        }
+      },
+      "id": "3e346e24-c8ab-4d60-8863-55f689ef46b4",
+      "name": "Convert to PDF",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -1296,
+        3600
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8e39ef5d-f537-4611-b91b-0950c6eca40e",
+              "name": "remoteJid",
+              "value": "={{ $('Primeiro Tratamento de Informações').item.json.data.key.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "id": "b4c8d780-0b6c-4998-ac15-6393d90b632d",
+              "name": "mensagem",
+              "value": "={{ $json.content.parts[0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0d467259-9ec4-49ab-a670-3a8edfa7770f",
+      "name": "Destaca transcricao audio1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -848,
+        3648
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ad8da47c-c48b-4bbd-a903-ab6c818f0718",
+              "name": "base64",
+              "value": "={{ $('Primeiro Tratamento de Informações').item.json.data.message.base64 }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0bb53f29-3584-4020-a6f0-0e378a3acb6f",
+      "name": "Separa o Base 66",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1168,
+        3216
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "base64",
+        "options": {
+          "mimeType": "video/mp4"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1392,
+        3216
+      ],
+      "id": "c3298ed5-9674-45af-8f1d-6c15a5807dc1",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d97d1b63-5fc7-41a4-8857-179e003d9b14",
+              "name": "remoteJid",
+              "value": "={{ $('Primeiro Tratamento de Informações').item.json.data.key.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "id": "91f72c33-dcb3-4954-82be-3d1cdc902a3b",
+              "name": "messageType",
+              "value": "MessageVideo",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -848,
+        2752
+      ],
+      "id": "b5289d19-959c-4bf0-a169-105f0beec70f",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2064,
+        2112
+      ],
+      "id": "50694641-233b-4faa-900c-abdda6e2b973",
+      "name": "Merge9"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().filter(i => Object.keys(i.json).length > 0);"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2576,
+        -96
+      ],
+      "id": "455b111d-8ce6-4c98-8ac1-565c532da245",
+      "name": "Payload - Tratamento Para envio da API - Create"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://aeritek.arandasoft.com/asmsapi/api/v9/item/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($input.all().find(i => i.json.arandaPayload)?.json.arandaPayload || {}) }}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2864,
+        -96
+      ],
+      "id": "f0fabb54-78a2-4997-b7be-d55851f57e50",
+      "name": "ARAN - Criar Chamado",
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1r8VZeUyHw8kRDu6",
+          "name": "ARANDA - HEADER"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://olxmnkdlhvkqmnkoszlj.supabase.co/rest/v1/chamados?groupJid=eq.{{ $('Payload - Aplicação de Padrão para abertura').first().json.groupJid }}&status=eq.COLLECTING&order=createdAt.desc&limit=1",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Profile",
+              "value": "TI - AV - Chamados Whatsapp"
+            },
+            {
+              "name": "Accept-Profile",
+              "value": "TI - AV - Chamados Whatsapp"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  {\n    \"case-id\": $('ARAN - Criar Chamado').item.json.processTimes.id,\n    arandaTicketId: $('ARAN - Criar Chamado').item.json.idByProject || \"\"\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3088,
+        336
+      ],
+      "id": "4f0d1392-3537-451a-b834-154d21f65fec",
+      "name": "SUPA - Grava Case-ID e ArandaTicket",
+      "credentials": {
+        "supabaseApi": {
+          "id": "dozsrf1lw0Yh7UPi",
+          "name": "SUPABASE - IMBERA PRODUCTION"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evo.imberabrasil.com/message/sendText/BOTIT",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3536,
+        128
+      ],
+      "id": "064a871a-a403-4ea4-b161-b6ed640fd7dd",
+      "name": "EVOL - Envio de Mensagem de Criação",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "OySbHXkQ7yLzCZSY",
+          "name": "EVOL - HEADER"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const MESSAGES = {\n  pt: {\n    title:     \"✅ *Chamado Aberto com Sucesso!*\",\n    ticket:    \"📋 *Número do Chamado:*\",\n    internal:  \"🔢 *ID Interno:*\",\n    follow:    \"📌 Para acompanhar ou encerrar seu chamado, utilize o número acima.\",\n    notify:    \"⏱ Nossa equipe já foi notificada e entrará em contato em breve.\",\n    signature: \"_Suporte TI - Imbera Brasil_ 🏢\",\n  },\n  es: {\n    title:     \"✅ *¡Ticket Levantado con Éxito!*\",\n    ticket:    \"📋 *Ticket:*\",\n    internal:  \"🔢 *ID Interno:*\",\n    follow:    \"📌 Para seguir o cerrar su ticket, utilice el número indicado arriba.\",\n    notify:    \"⏱ Nuestro equipo ya fue notificado y se pondrá en contacto pronto.\",\n    signature: \"_Soporte TI - Imbera Brasil_ 🏢\",\n  },\n  en: {\n    title:     \"✅ *Ticket Successfully Opened!*\",\n    ticket:    \"📋 *Ticket Number:*\",\n    internal:  \"🔢 *Internal ID:*\",\n    follow:    \"📌 To track or close your ticket, use the number above.\",\n    notify:    \"⏱ Our team has been notified and will get in touch shortly.\",\n    signature: \"_IT Support - Imbera Brasil_ 🏢\",\n  },\n};\n\nfunction buildMessage(lang, ticketNumber, ticketId) {\n  const m = MESSAGES[lang] || MESSAGES[\"pt\"];\n  return (\n    m.title + \"\\n\\n\" +\n    m.ticket + \" \" + ticketNumber + \"\\n\" +\n    m.internal + \" \" + ticketId + \"\\n\\n\" +\n    m.follow + \"\\n\" +\n    m.notify + \"\\n\\n\" +\n    m.signature\n  );\n}\n\nconst all = $input.all().map(i => i.json);\n\n// Item com lang + status (seu Code normalizado - item 3)\nconst normalized = all.find(i => i.lang  !== undefined) || {};\n\n// Item com idByProject (resposta do Aranda - item 2)\nconst aranda     = all.find(i => i.idByProject !== undefined) || {};\n\nconst groupJid     = normalized.groupJid  || \"\";\nconst lang         = normalized.lang      || \"pt\";\nconst ticketNumber = aranda.idByProject   || \"\";\nconst ticketId     = aranda.id            || \"\";\n\nconst text = buildMessage(lang, ticketNumber, ticketId);\n\nreturn [{\n  json: {\n    number: groupJid,\n    text,\n    lang,\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3312,
+        128
+      ],
+      "id": "2e763409-bd9d-4ee5-bfe0-0052d04705f5",
+      "name": "Payload - Escolha Idioma e Preparação Mensagem"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3088,
+        112
+      ],
+      "id": "79623ba8-7fa1-4624-a2ba-463604a9a0ba",
+      "name": "Merge - Envio ao grupo e db"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://olxmnkdlhvkqmnkoszlj.supabase.co/rest/v1/chamados",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Profile",
+              "value": "TI - AV - Chamados Whatsapp"
+            },
+            {
+              "name": "Accept-Profile",
+              "value": "TI - AV - Chamados Whatsapp"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  {\n    groupKey: $json.group_key || \"\",\n    groupJid: $json.group_jid || \"\",\n    status: \"COLLECTING\",\n    openedBy: $json.sender_phone || \"\",\n    openedByName: $json.sender_name || \"\",\n    openedAt: $json.opened_at || new Date().toISOString(),\n    closedBy: null,\n    closedAt: null,\n    arandaTicketId: $json.aranda_ticket_id || null,\n    lang: $json.lang || \"pt\",\n    messages: \"[]\",\n    log: \"[{\\\"action\\\":\\\"OPENED\\\",\\\"by\\\":\\\"\" + ($json.sender_phone || \"\") + \"\\\",\\\"byName\\\":\\\"\" + ($json.sender_name || \"\") + \"\\\",\\\"at\\\":\\\"\" + new Date().toISOString() + \"\\\",\\\"text\\\":null}]\"\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2064,
+        -96
+      ],
+      "id": "c8d70726-4995-4d8c-ab21-f0c984a45783",
+      "name": "SUPA - Salva Informações no DB",
+      "credentials": {
+        "supabaseApi": {
+          "id": "dozsrf1lw0Yh7UPi",
+          "name": "SUPABASE - IMBERA PRODUCTION"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2288,
+        -96
+      ],
+      "id": "193f8a4f-203c-4c64-8fb4-a91afc76fd6b",
+      "name": "Merge - Informações para o Payload de Atualização"
+    },
+    {
+      "parameters": {
+        "jsCode": "const all = $input.all().map(i => i.json);\n\n// Item normalizado (tem lang + status)\nconst normalized = all.find(i => i.lang !== undefined) || {};\n\n// Item com arandaPayload (tem idByProject virá do merge, mas aqui pegamos o aranda)\nconst aranda = all.find(i => i.idByProject !== undefined) || {};\n\n// Monta o registro para o Supabase\nconst now = new Date().toISOString();\n\nreturn [{\n  json: {\n    group_jid:        normalized.groupJid       || \"\",\n    group_key:        normalized.groupKey        || \"\",\n    sender:           normalized.sender          || \"\",\n    sender_phone:     normalized.senderPhone     || \"\",\n    sender_name:      normalized.senderName      || \"\",\n    message_id:       normalized.messageId       || \"\",\n    message_text:     normalized.messageText     || \"\",\n    message_type:     normalized.messageType     || \"\",\n    timestamp:        normalized.timestamp        || null,\n    aranda_ticket_id: aranda.idByProject         || null,\n    opened_by:        normalized.openedBy        || \"\",\n    opened_by_name:   normalized.openedByName    || \"\",\n    opened_at:        normalized.openedAt        || now,\n    closed_by:        normalized.closedBy        || null,\n    closed_at:        normalized.closedAt        || null,\n    messages:         normalized.messages        || \"[]\",\n    log:              normalized.log             || \"[]\",\n    has_ticket_active: true,\n    status:           \"Collecting\",\n    lang:             normalized.lang            || \"pt\",\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1840,
+        -96
+      ],
+      "id": "2494d5b1-8a61-4f29-b2f0-7f817ad757d7",
+      "name": "Payload - Preparação de Envio para DB"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1616,
+        -96
+      ],
+      "id": "889a894e-35b3-4b9d-b24b-4484fcc3d2ed",
+      "name": "Merge - Informações sobre o chamado e Abertura"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evo.imberabrasil.com/message/sendText/BOTIT",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  JSON.stringify({\n    number: $('Normalize Payload2').item.json.groupJid,\n    text:\n      \"⚠️ *Chamado Já Aberto!*\\n\\n\" +\n      \"📋 *Número do Chamado:* \" + $('Separação de Informações do DB').item.json.arandaTicketId + \"\\n\\n\" +\n      \"ℹ️ Você já possui um chamado em aberto em nosso sistema.\\n\" +\n      \"📌 Aguarde o atendimento do chamado atual antes de abrir um novo.\\n\\n\" +\n      \"_Suporte TI - Imbera Brasil_ 🏢\"\n  })\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1888,
+        288
+      ],
+      "id": "28348ceb-748f-4cd7-93de-4e5cfb6e4c87",
+      "name": "EVOL - Mensagem para Chamado já ativo",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1r8VZeUyHw8kRDu6",
+          "name": "ARANDA - HEADER"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code node (JavaScript)\n// Gera payload padrão para ARANDA ASMS v9 - POST /api/v9/item/\n\n// ====== FIXOS (ajuste aqui) ======\nconst FIXED = {\n  authorId: 1,\n  modelId: 18,\n  projectId: 2,\n  serviceId: 78,\n  categoryId: 322,\n  stateId: 190,\n  consoleType: \"specialist\",\n  customerId: 64,\n  applicantId: 64,\n  urgencyId: 5,\n  itemType: 4,\n  groupId: 2730,\n  responsibleId: 623,\n  companyId: null,\n  listAdditionalField: [],\n  tempItemId: -3,\n  validate: true,\n  registryTypeId: 3149,\n};\n\nconst items = $input.all();\n\nfunction safeStr(v) {\n  return (v ?? \"\").toString().trim();\n}\n\nfunction toNumber(v, fallback = null) {\n  const n = Number(v);\n  return Number.isFinite(n) ? n : fallback;\n}\n\nconst out = [];\n\nfor (const item of items) {\n  const j = item.json || {};\n\n  const text =\n    safeStr(j.messageText) ||\n    safeStr(j.text) ||\n    safeStr(j.message?.text) ||\n    safeStr(j.body?.text) ||\n    safeStr(j.raw?.body?.data?.message?.conversation);\n\n  const senderName =\n    safeStr(j.senderName) ||\n    safeStr(j.pushName) ||\n    safeStr(j.raw?.body?.data?.pushName) ||\n    \"Usuário WhatsApp\";\n\n  const senderPhone =\n    safeStr(j.senderPhone) ||\n    safeStr(j.sender) ||\n    safeStr(j.raw?.body?.data?.key?.participantAlt)?.split(\"@\")[0] ||\n    safeStr(j.raw?.body?.data?.key?.remoteJid)?.split(\"@\")[0] ||\n    \"\";\n\n  const messageId =\n    safeStr(j.messageId) ||\n    safeStr(j.raw?.body?.data?.key?.id) ||\n    \"\";\n\n  const groupJid =\n    safeStr(j.groupJid) ||\n    safeStr(j.raw?.body?.data?.key?.remoteJid) ||\n    \"\";\n\n  const isGroup = groupJid.endsWith(\"@g.us\");\n\n  const timestamp = j.timestamp || j.raw?.body?.data?.messageTimestamp || null;\n\n  const when = timestamp\n    ? new Date(toNumber(timestamp, Date.now())).toLocaleString(\"pt-BR\")\n    : new Date().toLocaleString(\"pt-BR\");\n\n  const subject = `Chamado WhatsApp - ${senderName}`;\n\n  const description =\n    `Chamado aberto automaticamente via WhatsApp.<br>` +\n    `Solicitante: ${senderName}${senderPhone ? ` (${senderPhone})` : \"\"}<br>` +\n    `${isGroup ? `Grupo: ${groupJid}<br>` : \"\"}` +\n    `${messageId ? `Mensagem ID: ${messageId}<br>` : \"\"}` +\n    `Data: ${when}<br>` +\n    (text ? `Conteúdo: ${text}` : \"\");\n\n  const arandaPayload = {\n    authorId:            FIXED.authorId,\n    modelId:             FIXED.modelId,\n    projectId:           FIXED.projectId,\n    serviceId:           FIXED.serviceId,\n    categoryId:          FIXED.categoryId,\n    stateId:             FIXED.stateId,\n    subject,\n    companyId:           FIXED.companyId,\n    consoleType:         FIXED.consoleType,\n    customerId:          FIXED.customerId,\n    urgencyId:           FIXED.urgencyId,\n    description,\n    itemType:            FIXED.itemType,\n    groupId:             FIXED.groupId,\n    responsibleId:       FIXED.responsibleId,\n    applicantId:         FIXED.applicantId,\n    registryTypeId:      FIXED.registryTypeId, \n    listAdditionalField: FIXED.listAdditionalField,\n    tempItemId:          FIXED.tempItemId,\n    validate:            FIXED.validate,\n  };\n\n  out.push({\n    json: {\n      arandaPayload,\n      senderName,\n      senderPhone,\n      messageId,\n      groupJid,\n      text,\n      timestamp,\n    }\n  });\n}\n\nif (out.length === 0) {\n  return [{\n    json: {\n      skipped: true,\n      reason: \"Nenhum item de entrada válido\",\n      inputCount: items.length,\n    }\n  }];\n}\n\nreturn out;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1392,
+        240
+      ],
+      "id": "da73a1fc-f800-46bf-b63f-d11c576dee2c",
+      "name": "Payload - Aplicação de Padrão para abertura"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3536,
+        1328
+      ],
+      "id": "1a18b350-b8b0-4f32-a651-e17afb27d15a",
+      "name": "Merge - Preparação para \"Terminar\" o chamado"
+    },
+    {
+      "parameters": {
+        "jsCode": "function tryParse(value) {\n  if (!value || value === \"null\") return null;\n  try { return JSON.parse(value); } catch { return value; }\n}\n\n// Separa os itens pelo shape\nconst whatsappItem = items.find(i => \"arandaTicketId\" in i.json && \"groupJid\" in i.json);\nconst arandaItem   = items.find(i => \"idByProject\" in i.json);\n\nconst wa  = whatsappItem?.json ?? {};\nconst ara = arandaItem?.json   ?? {};\n\n// Monta o commentary com os dados da IA\nconst linhas = [\n  wa.descricao ? `Descrição: ${wa.descricao}` : null,\n  wa.resolucao ? `Resolução: ${wa.resolucao}` : \"Resolução: Chamado encerrado automaticamente via WhatsApp.\",\n  wa.openedByName ? `Solicitante: ${wa.openedByName} (${wa.openedBy})` : null,\n  wa.openedAt     ? `Aberto em: ${wa.openedAt}` : null,\n].filter(Boolean).join(\"\\n\");\n\n// Payload exatamente no formato da API Aranda\nreturn [{\n  json: {\n    id:                  Number((wa[\"case-id\"] ?? ara.id ?? \"\").toString().replace(/\\D/g, \"\")),\n    itemType:            ara.itemType    ?? 4,\n    itemVersion:         ara.itemVersion ?? 1,\n    modelId:             ara.modelId     ?? 18,\n    stateId:             214,\n    commentary:          linhas,\n    consoleType:         \"specialist\",\n    listAdditionalField: [],\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3760,
+        1328
+      ],
+      "id": "655856d2-d1ee-40ad-a380-b2d024695487",
+      "name": "Payload - Estruturação do JSON de envio"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://aeritek.arandasoft.com/ASMSAPI/api/v9/item/{{ $json.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3984,
+        1328
+      ],
+      "id": "db432edb-64df-4ab5-b5ed-17494d07b1df",
+      "name": "ARAN - Finalizar Chamados",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1r8VZeUyHw8kRDu6",
+          "name": "ARANDA - HEADER"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {
+          "includeUnpaired": true
+        }
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        4208,
+        1248
+      ],
+      "id": "bb24f359-1d5f-48e0-9e82-fe0a813fad53",
+      "name": "Merge - Recolhimento de Informações - Chamado Cerrado"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://aeritek.arandasoft.com/ASMSAPI/api/v9/item/{{ $('Normalizando Para Fechar Chamado').item.json[\"case-id\"] }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  id: $json.id,\n  itemType: $json.itemType,\n  itemVersion: $json.itemVersion,\n  modelId: $json.modelId,\n  stateId: 217,\n  commentary: $('Normalizando Para Fechar Chamado').item.json.resolucao,\n  consoleType: \"specialist\",\n  listAdditionalField: [],\n  projectId: $json.projectId,\n  serviceId: $json.serviceId,\n  categoryId: $json.categoryId,\n  groupId: $json.groupId,\n  responsibleId: $json.responsibleId,\n  urgencyId: $json.urgencyId,\n  subject: $json.subject,\n  companyId: $json.companyId,\n  customerId: $json.customerId,\n  applicantId: $json.applicantId,\n  impactId: $json.impactId,\n  priorityId: $json.priorityId,\n  description: $('Payload - Estruturação do JSON de envio').item.json.commentary\n}) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        4656,
+        1248
+      ],
+      "id": "db5ff3f7-af14-415b-8f95-05cb757d07a7",
+      "name": "ARAN - Chamado Cerrado",
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1r8VZeUyHw8kRDu6",
+          "name": "ARANDA - HEADER"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://aeritek.arandasoft.com/ASMSAPI/api/v9/item/{{ $json[\"case-id\"] }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        4432,
+        1248
+      ],
+      "id": "9f7c4884-c929-4533-940d-831aa8cf3d6b",
+      "name": "ARAN - Buscar chamado para Estruturação de JSON",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1r8VZeUyHw8kRDu6",
+          "name": "ARANDA - HEADER"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://aeritek.arandasoft.com/ASMSAPI/api/v9/item/{{ $json[\"case-id\"] }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3312,
+        1392
+      ],
+      "id": "cf475367-c07d-49f9-8c6f-cda9471765b6",
+      "name": "ARAN - Buscar - Chamados na API",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1r8VZeUyHw8kRDu6",
+          "name": "ARANDA - HEADER"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://olxmnkdlhvkqmnkoszlj.supabase.co/rest/v1/chamados?arandaTicketId=eq.{{ $('ARAN - Buscar chamado para Estruturação de JSON').item.json.idByProject }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Profile",
+              "value": "TI - AV - Chamados Whatsapp"
+            },
+            {
+              "name": "Accept-Profile",
+              "value": "TI - AV - Chamados Whatsapp"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  {\n  \"status\" : \"CERRADO\"\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        4880,
+        1200
+      ],
+      "id": "bc83c779-c3fb-49ae-abd8-92bd58bb3acd",
+      "name": "SUPA - Fechar chamado no DB",
+      "credentials": {
+        "supabaseApi": {
+          "id": "dozsrf1lw0Yh7UPi",
+          "name": "SUPABASE - IMBERA PRODUCTION"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        4880,
+        1488
+      ],
+      "id": "265b90a7-0efc-4083-b065-75776fdd0573",
+      "name": "Merge - Agrupamento de Informações para envio da Mensagem do Whatsapp"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evo.imberabrasil.com/message/sendText/BOTIT",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        5328,
+        1488
+      ],
+      "id": "f6a329f6-faf0-420d-8885-a94c314ba023",
+      "name": "EVOL - Envio de Mensagem Finalização",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "OySbHXkQ7yLzCZSY",
+          "name": "EVOL - HEADER"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const MESSAGES = {\n  pt: {\n    title:     \"🔴 *Chamado Encerrado!*\",\n    ticket:    \"📋 *Número do Chamado:*\",\n    success:   \"✅ Seu chamado foi encerrado com sucesso pelo solicitante via WhatsApp.\",\n    registry:  \"📁 O registro foi finalizado em nosso sistema e está disponível para consulta.\",\n    signature: \"_Suporte TI - Imbera Brasil_ 🏢\",\n  },\n  es: {\n    title:     \"🔴 *¡Ticket Cerrado!*\",\n    ticket:    \"📋 *Número de Ticket:*\",\n    success:   \"✅ Su ticket fue cerrado con éxito por el solicitante vía WhatsApp.\",\n    registry:  \"📁 El registro fue finalizado en nuestro sistema y está disponible para consulta.\",\n    signature: \"_Soporte TI - Imbera Brasil_ 🏢\",\n  },\n  en: {\n    title:     \"🔴 *Ticket Closed!*\",\n    ticket:    \"📋 *Ticket Number:*\",\n    success:   \"✅ Your ticket was successfully closed by the requester via WhatsApp.\",\n    registry:  \"📁 The record has been finalized in our system and is available for consultation.\",\n    signature: \"_IT Support - Imbera Brasil_ 🏢\",\n  },\n};\n\nfunction buildMessage(lang, ticketId) {\n  const m = MESSAGES[lang] || MESSAGES[\"pt\"];\n  return (\n    m.title    + \"\\n\\n\" +\n    m.ticket   + \" \" + ticketId + \"\\n\\n\" +\n    m.success  + \"\\n\" +\n    m.registry + \"\\n\\n\" +\n    m.signature\n  );\n}\n\nconst all = $input.all().map(i => i.json);\n\nconst aranda = all.find(i => i.result === true && i.processTimes !== undefined) || {};\nconst ticket = all.find(i => i.groupJid !== undefined && i.arandaTicketId !== undefined) || {};\n\nconst groupJid = ticket.groupJid        || \"\";\nconst ticketId = ticket.arandaTicketId  || aranda.processTimes?.id || \"\";\n\n// Pega lang do ticket, valida se existe no dicionário, senão \"pt\"\nconst rawLang  = (ticket.lang || \"\").toString().toLowerCase().trim();\nconst lang     = MESSAGES[rawLang] ? rawLang : \"pt\";\n\nconst text = buildMessage(lang, ticketId);\n\nreturn [{\n  json: {\n    number: groupJid,\n    text,\n    lang,\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5104,
+        1488
+      ],
+      "id": "7ad11b53-4045-4a89-92e7-2fece2043df4",
+      "name": "Payload - Estruturação de Mensagem de Fechamento de Chamado"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2864,
+        1344
+      ],
+      "id": "a816ab33-1f5f-4ba7-85f4-644f69252983",
+      "name": "Merge - Junção de Informações sobre Descr e Solution"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json }}",
+        "options": {
+          "systemMessage": "Eres un analista sénior de soporte técnico con profundo conocimiento en diagnóstico de problemas y atención al cliente. Tu única salida permitida es un objeto JSON puro.\n\nANÁLISIS DEL TICKET:\nLee detenidamente TODOS los campos disponibles en el JSON recibido, especialmente \"message_body\" y \"messages\". Considera:\n- El historial completo de la conversación, no solo el último mensaje.\n- El tono y la urgencia del cliente (frustración, urgencia, confusión).\n- El contexto técnico implícito (errores mencionados, flujos rotos, impacto en el negocio).\n- Las acciones ya tomadas por ambas partes antes del mensaje actual.\n\nREGLAS CRÍTICAS DE IDIOMA:\n1. Identifica el idioma predominante en los mensajes del ticket.\n2. OBLIGATORIO: Escribe \"descricao\" y \"resolucao\" en el MISMO idioma detectado.\n\nDIRECTRICES DE CALIDAD:\n\n- descricao:\n  Redacta una narrativa técnica completa del problema. Incluye: lo que el cliente reportó, qué funcionalidad o sistema está afectado, síntomas observados, errores o comportamientos inesperados mencionados, y el impacto percibido en el negocio u operación del cliente. Texto continuo, sin \\n, sin viñetas.\n\n- resolucao:\n  Describe de forma clara y detallada: el estado actual de la atención, las acciones ya realizadas para investigar o resolver el problema, las decisiones tomadas, las derivaciones realizadas (equipo, área, escalamiento), y cuál es el próximo paso esperado o acordado. Si el problema fue resuelto, explica cómo. Texto continuo, sin \\n.\n\nREGLAS GENERALES:\n- Usa 'null' (sin comillas) solo cuando la información realmente no exista.\n- Nunca inventes datos, suposiciones ni contexto que no esté explícito en el ticket.\n- Sé factual, técnico y objetivo, pero con riqueza de detalles.\n\nFORMATO DE SALIDA (SOLO JSON):\n{\n  \"descricao\": \"VALOR_EN_EL_IDIOMA_DETECTADO\",\n  \"resolucao\": \"VALOR_EN_EL_IDIOMA_DETECTADO\"\n}\n\nPROHIBIDO: No agregues explicaciones, bloques de código markdown (```json) ni ningún texto fuera de las llaves."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2512,
+        928
+      ],
+      "id": "886d7637-ce07-4f1b-9dc6-0528be363ad0",
+      "name": "Analise e Geração de Resumo sobre Descr e Soluti"
+    },
+    {
+      "parameters": {
+        "jsCode": "const messages = $input.all().map(item => item.json);\n\nconst result = {\n  ticket_id: messages[0]?.aranda_ticket_id,\n  group_jid: messages[0]?.group_jid,\n  opened_by_name: messages[0]?.opened_by_name,\n  opened_by: messages[0]?.opened_by,\n  status: messages[0]?.status,\n  messages: messages.map(msg => ({\n    id: msg.id,\n    sender_name: msg.sender_name,\n    sender_phone: msg.sender_phone,\n    message_body: msg.message_body,\n    message_type: msg.message_type,\n    media_url: msg.media_url,\n    timestamp: msg.timestamp_whatsapp,\n    uuid: msg.uuid\n  }))\n};\n\nreturn [{ json: result }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2288,
+        1040
+      ],
+      "id": "d6857e02-11ed-40c2-a7da-cc51ea36a557",
+      "name": "Payload - Envio de Informações necessarias para AI"
+    },
+    {
+      "parameters": {
+        "url": "https://olxmnkdlhvkqmnkoszlj.supabase.co/rest/v1/mensagens_whatsapp",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "group_jid",
+              "value": "=eq.{{ $json.groupJid }}"
+            },
+            {
+              "name": "aranda_ticket_id",
+              "value": "=eq.{{ $json.arandaTicketId }}"
+            },
+            {
+              "name": "order",
+              "value": "timestamp_whatsapp.asc"
+            },
+            {
+              "name": "select",
+              "value": "*"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept-Profile",
+              "value": "TI - AV - Chamados Whatsapp"
+            },
+            {
+              "name": "Content-Profile",
+              "value": "TI - AV - Chamados Whatsapp"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1840,
+        992
+      ],
+      "id": "f59f1286-aa51-4990-9d5c-b9d5a6cbc588",
+      "name": "SUPA - Busca de Ultimas mensagens dos chamados",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "dozsrf1lw0Yh7UPi",
+          "name": "SUPABASE - IMBERA PRODUCTION"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const MESSAGES = {\n  pt: {\n    title:     \"⚠️ *Nenhum Chamado Encontrado!*\",\n    body:      \"📭 Não há chamados abertos neste grupo no momento.\",\n    tip:       \"📌 Para abrir um novo chamado, utilize o comando *#open#*.\",\n    signature: \"_Suporte TI - Imbera Brasil_ 🏢\",\n  },\n  es: {\n    title:     \"⚠️ *¡Ningún Ticket Encontrado!*\",\n    body:      \"📭 No hay tickets abiertos en este grupo en este momento.\",\n    tip:       \"📌 Para abrir un nuevo ticket, utilice el comando *#open#*.\",\n    signature: \"_Soporte TI - Imbera Brasil_ 🏢\",\n  },\n  en: {\n    title:     \"⚠️ *No Ticket Found!*\",\n    body:      \"📭 There are no open tickets in this group at the moment.\",\n    tip:       \"📌 To open a new ticket, use the command *#open#*.\",\n    signature: \"_IT Support - Imbera Brasil_ 🏢\",\n  },\n};\n\nfunction buildMessage(lang) {\n  const m = MESSAGES[lang] || MESSAGES[\"pt\"];\n  return (\n    m.title    + \"\\n\\n\" +\n    m.body     + \"\\n\" +\n    m.tip      + \"\\n\\n\" +\n    m.signature\n  );\n}\n\nconst normalized = $('Tratamento de Informações e direcionamento de chaves').first().json;\n\nconst groupJid = normalized.groupJid || \"\";\nconst lang     = normalized.lang     || \"pt\";\nconst text     = buildMessage(lang);\n\nreturn [{\n  json: {\n    number: groupJid,\n    text,\n    lang,\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1840,
+        1824
+      ],
+      "id": "78af02fb-ee72-4dba-8dfc-bfa8b0a21677",
+      "name": "Payload - Estruturação de JSON para Chamados não criados"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evo.imberabrasil.com/message/sendText/BOTIT",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  number: $('Tratamento de Informações e direcionamento de chaves').first().json.groupJid,\n  text: $json.text\n}) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2064,
+        1824
+      ],
+      "id": "447b0ce4-d9ed-405d-9384-8ea2ab7b3f95",
+      "name": "EVOL - Mensagens Chamados não criados",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "OySbHXkQ7yLzCZSY",
+          "name": "EVOL - HEADER"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const MESSAGES = {\n  pt: {\n    title:     \"📎 *Arquivo Anexado ao Chamado!*\",\n    ticket:    \"📋 *Chamado:*\",\n    success:   \"✅ Seu arquivo foi anexado com sucesso ao chamado em aberto.\",\n    signature: \"_Suporte TI - Imbera Brasil_ 🏢\",\n  },\n  es: {\n    title:     \"📎 *¡Archivo Adjuntado al Ticket!*\",\n    ticket:    \"📋 *Ticket:*\",\n    success:   \"✅ Su archivo fue adjuntado con éxito al ticket abierto.\",\n    signature: \"_Soporte TI - Imbera Brasil_ 🏢\",\n  },\n  en: {\n    title:     \"📎 *File Attached to Ticket!*\",\n    ticket:    \"📋 *Ticket:*\",\n    success:   \"✅ Your file was successfully attached to the open ticket.\",\n    signature: \"_IT Support - Imbera Brasil_ 🏢\",\n  },\n};\n\nfunction buildMessage(lang, ticketId) {\n  const m = MESSAGES[lang] || MESSAGES[\"pt\"];\n  return (\n    m.title   + \"\\n\\n\" +\n    m.ticket  + \" \" + ticketId + \"\\n\" +\n    m.success + \"\\n\\n\" +\n    m.signature\n  );\n}\n\n// ⚠️ Ajustar a referência ao node de origem quando você me passar\nconst source = $('SUPA - Buscar Ticket Ativo').first().json;\n\nconst groupJid = source.groupJid      || \"\";\nconst ticketId = source.arandaTicketId || \"\";\n\nconst rawLang = (source.lang || \"\").toString().toLowerCase().trim();\nconst lang    = MESSAGES[rawLang] ? rawLang : \"pt\";\n\nconst text = buildMessage(lang, ticketId);\n\nreturn [{\n  json: {\n    number: groupJid,\n    text,\n    lang,\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2288,
+        2112
+      ],
+      "id": "6b1d9481-6daa-49e1-8be7-0e9dcc643a75",
+      "name": "Payload - Preparação Envio de Foto - Notificação"
+    },
+    {
+      "parameters": {
+        "url": "https://olxmnkdlhvkqmnkoszlj.supabase.co/rest/v1/chamados",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "groupJid",
+              "value": "=eq.{{ $json.groupJid }}"
+            },
+            {
+              "name": "status",
+              "value": "eq.COLLECTING"
+            },
+            {
+              "name": "order",
+              "value": "openedAt.desc"
+            },
+            {
+              "name": "limit",
+              "value": "1"
+            },
+            {
+              "name": "select",
+              "value": "*"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept-Profile",
+              "value": "TI - AV - Chamados Whatsapp"
+            },
+            {
+              "name": "Content-Profile",
+              "value": "TI - AV - Chamados Whatsapp"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1392,
+        1472
+      ],
+      "id": "476d80cd-13fc-4e07-8cea-790f7ba9d35d",
+      "name": "SUPA - Buscar ID do grupo",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "dozsrf1lw0Yh7UPi",
+          "name": "SUPABASE - IMBERA PRODUCTION"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://olxmnkdlhvkqmnkoszlj.supabase.co/rest/v1/chamados",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "groupKey",
+              "value": "=eq.{{ $json.groupKey }}"
+            },
+            {
+              "name": "status",
+              "value": "eq.COLLECTING"
+            },
+            {
+              "name": "limit",
+              "value": "1"
+            },
+            {
+              "name": "select",
+              "value": "*"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept-Profile",
+              "value": "TI - AV - Chamados Whatsapp"
+            },
+            {
+              "name": "Content-Profile",
+              "value": "TI - AV - Chamados Whatsapp"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1392,
+        2144
+      ],
+      "id": "2c5957a3-a2f6-4f95-8421-c181e0e297d7",
+      "name": "SUPA - Buscar Ticket Ativo",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "dozsrf1lw0Yh7UPi",
+          "name": "SUPABASE - IMBERA PRODUCTION"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://aeritek.arandasoft.com/asmsapi/api/v9/file/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "FileItemId",
+              "value": "={{ $json[\"case-id\"].replace(/\\D/g, \"\") }}"
+            },
+            {
+              "name": "FileItemType",
+              "value": "={{ $json.fileItemType }}"
+            },
+            {
+              "name": "Concept",
+              "value": "={{ $json.concept }}"
+            },
+            {
+              "name": "UploadType",
+              "value": "={{ $json.uploadType }}"
+            },
+            {
+              "name": "Description",
+              "value": "={{ $json.description }}"
+            },
+            {
+              "name": "IsPublic",
+              "value": "={{ $json.isPublic }}"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "Data0",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1840,
+        2016
+      ],
+      "id": "6fea9220-b59e-4600-8829-9fe85cfe0785",
+      "name": "ARAN - Upload de Arquivo na API",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1r8VZeUyHw8kRDu6",
+          "name": "ARANDA - HEADER"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evo.imberabrasil.com/message/sendText/BOTIT",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2576,
+        2112
+      ],
+      "id": "a1a5f318-97c8-4a1f-807e-8a7e68c3bb19",
+      "name": "EVOL - Notificar Imagem Anexada",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "OySbHXkQ7yLzCZSY",
+          "name": "EVOL - HEADER"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://olxmnkdlhvkqmnkoszlj.supabase.co/rest/v1/mensagens_whatsapp",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Profile",
+              "value": "TI - AV - Chamados Whatsapp"
+            },
+            {
+              "name": "Accept-Profile",
+              "value": "TI - AV - Chamados Whatsapp"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"whatsapp_id\": \"{{ $json.messageId || '' }}\",\n  \"group_jid\": \"{{ $json.groupJid || '' }}\",\n  \"remote_jid\": \"{{ $json.groupJid ? $json.groupJid.split('@')[0] : '' }}\",\n  \"sender_name\": \"{{ $json.senderName || '' }}\",\n  \"sender_phone\": \"{{ $json.senderPhone || '' }}\",\n  \"message_body\": \"{{ $json.messageText || '' }}\",\n  \"message_type\": \"{{ $json.messageType || '' }}\",\n  \"aranda_ticket_id\": \"{{ $json.arandaTicketId || null }}\",\n  \"status\": \"{{ $json.status || 'COLLECTING' }}\",\n  \"opened_by\": \"{{ $json.senderPhone || '' }}\",\n  \"opened_by_name\": \"{{ $json.senderName || '' }}\",\n  \"timestamp_whatsapp\": \"{{ $json.timestamp ? new Date(Number($json.timestamp)).toISOString() : new Date().toISOString() }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1616,
+        2544
+      ],
+      "id": "39cbf055-ae92-4aa4-9e44-e33167042bbc",
+      "name": "SUPA - Cadastro de Mensagens no DB",
+      "credentials": {
+        "supabaseApi": {
+          "id": "dozsrf1lw0Yh7UPi",
+          "name": "SUPABASE - IMBERA PRODUCTION"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json;\nreturn [{\n  json: {\n    messageId:       raw?.messageId   || raw?.data?.key?.id || '',\n    groupJid:        raw?.groupJid    || raw?.data?.key?.remoteJid || '',\n    senderName:      raw?.senderName  || raw?.data?.pushName || '',\n    senderPhone:     raw?.senderPhone || '',\n    messageText:     (raw?.messageText || raw?.text || '').replace(/[\\r\\n]+/g, ' ').trim(),\n    messageType:     raw?.messageType || raw?.data?.messageType || '',\n    arandaTicketId:  raw?.arandaTicketId || null,\n    status:          raw?.status      || 'COLLECTING',\n    openedBy:        raw?.openedBy    || raw?.senderPhone || '',\n    openedByName:    raw?.openedByName || raw?.senderName || '',\n    timestamp:       raw?.timestamp   || Date.now(),\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1392,
+        2544
+      ],
+      "id": "62f1f196-5c2b-4101-8c2f-a5a4f99523e8",
+      "name": "Payload de Estruturação de Mensagens"
+    },
+    {
+      "parameters": {
+        "url": "=https://olxmnkdlhvkqmnkoszlj.supabase.co/rest/v1/chamados",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "groupJid",
+              "value": "=eq.{{ $json.groupJid }}"
+            },
+            {
+              "name": "status",
+              "value": "eq.COLLECTING"
+            },
+            {
+              "name": "limit",
+              "value": "1"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept-Profile",
+              "value": "TI - AV - Chamados Whatsapp"
+            },
+            {
+              "name": "Content-Profile",
+              "value": "TI - AV - Chamados Whatsapp"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -176,
+        2496
+      ],
+      "id": "d7a7bd28-8924-481b-9e6c-43b392978b64",
+      "name": "SUPA - Buscar Ticket Ativo1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "dozsrf1lw0Yh7UPi",
+          "name": "SUPABASE - IMBERA PRODUCTION"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "064523e1-8905-4bdd-a838-75664c0afc7a",
+              "leftValue": "={{ $json.messageText.toLowerCase() }}",
+              "rightValue": "#close#",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        944,
+        1472
+      ],
+      "id": "060bf162-ced0-49dd-99b6-14a65c23e307",
+      "name": "Detectar #Close#"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "06a4b1ea-ead9-4572-9055-60b3659d118c",
+              "leftValue": "={{ $json.messageType }}",
+              "rightValue": "ImageMessage",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "3bc47860-ab22-49b1-be41-0f7c8f711a04",
+              "leftValue": "={{ $json.messageType }}",
+              "rightValue": "AudioMessage",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {
+          "ignoreCase": false
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1168,
+        1472
+      ],
+      "id": "f761c9f6-754b-4399-8262-d0c171728d7e",
+      "name": "Filter - Imagem e Audio"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6c2f4026-9feb-4c79-99b2-5aaff9606b8f",
+              "leftValue": "={{$json}}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1616,
+        1472
+      ],
+      "id": "cd693492-c070-44dd-94b4-5293b2affb8d",
+      "name": "Validação se possui Ticket Ativo"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "48bb0052-d666-41ef-9a0e-076cce0a3027",
+              "name": "openedByName",
+              "value": "={{ $json.openedByName }}",
+              "type": "string"
+            },
+            {
+              "id": "2f08b751-074b-43fe-8070-c4e5e5890dea",
+              "name": "status",
+              "value": "={{ $json.status }}",
+              "type": "string"
+            },
+            {
+              "id": "56228daa-dc68-47bb-81fc-48256d9fa452",
+              "name": "arandaTicketId",
+              "value": "={{ $json.arandaTicketId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        48,
+        2496
+      ],
+      "id": "e98b35ae-eb68-480b-8672-66fca3bd02d6",
+      "name": "Separação de Informações do DB",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// MAPEAMENTO: groupJid → idioma\n// Adicione novos grupos aqui conforme necessário\n// ============================================================\nconst GROUP_LANG_MAP = {\n  \"120363xxxxxxxx1@g.us\": \"pt\", // Grupo Brasil\n  \"120363425589076485@g.us\": \"es\", // Grupo México\n  \"120363424210222326@g.us\": \"en\", // Grupo USA\n  // Adicione mais grupos aqui...\n};\n\nfunction getGroupLang(groupJid) {\n  return GROUP_LANG_MAP[groupJid] || \"pt\"; // padrão: português\n}\n\n// ============================================================\n\nconst items = $input.all();\nconst results = [];\n\nfor (const item of items) {\n  const raw = item.json;\n  const innerBody = raw.raw || {};\n  const data      = innerBody.data || {};\n  const key       = data.key || {};\n\n  const messageText = (\n    raw.text ||\n    raw.messageText ||\n    (data.message && data.message.conversation) ||\n    (data.message && data.message.extendedTextMessage && data.message.extendedTextMessage.text) ||\n    \"\"\n  ).trim();\n\n  const normalized = {\n    groupJid:       raw.groupJid    || key.remoteJid    || \"\",\n    groupKey:       raw.groupKey    || (key.remoteJid ? key.remoteJid.split(\"@\")[0] : \"\"),\n    sender:         raw.sender      || innerBody.sender || \"\",\n    senderPhone:    raw.senderPhone || (key.participantAlt ? key.participantAlt.replace(\"@s.whatsapp.net\", \"\") : \"\") || \"\",\n    senderName:     raw.senderName  || data.pushName    || \"Desconhecido\",\n    messageId:      raw.messageId   || key.id           || \"\",\n    messageText:    messageText,\n    messageType:    raw.messageType || data.messageType || \"\",\n    timestamp:      raw.timestamp   || data.messageTimestamp || null,\n    arandaTicketId: raw.arandaTicketId || null,\n    openedBy:       raw.openedBy    || (key.participantAlt ? key.participantAlt.replace(\"@s.whatsapp.net\", \"\") : \"\") || \"\",\n    openedByName:   raw.openedByName || data.pushName   || \"\",\n    openedAt:       raw.openedAt    || null,\n    closedBy:       raw.closedBy    || null,\n    closedAt:       raw.closedAt    || null,\n    messages:       raw.messages    || \"[]\",\n    log:            raw.log         || \"[]\",\n  };\n\n  const hasTicketActive = typeof raw.arandaTicketId === \"string\" &&\n                          raw.arandaTicketId.toUpperCase().startsWith(\"RF-TI\");\n\n  const isClose  = /^#+\\s*fechar\\s*#+$/i.test(messageText.trim()) || /^#+\\s*close\\s*#+$/i.test(messageText.trim());\n\n  const isCreate = /^#+\\s*abrir\\s*#+$/i.test(messageText.trim())  ||\n                   /^#+\\s*create\\s*#+$/i.test(messageText.trim()) ||\n                   /^#+\\s*open\\s*#+$/i.test(messageText.trim()) ||\n\n                  \n                   /^#+\\s*criar\\s*#+$/i.test(messageText.trim());\n\n  const isBotImb = /Suporte TI - Imbera Brasil/i.test(normalized.senderName) ||\n                   /Suporte TI - Imbera Brasil/i.test(normalized.groupJid)    ||\n                   /Suporte TI - Imbera Brasil/i.test(raw.groupName || \"\")    ||\n                   /Suporte TI - Imbera Brasil/i.test(messageText);\n\n  let status;\n  if (isBotImb) {\n    status = \"BotImb\";\n  } else if (isClose) {\n    status = \"Ending\";\n  } else if (isCreate) {\n    status = \"Create\";\n  } else {\n    const supabaseStatus = raw.status || null;\n    if (!supabaseStatus || supabaseStatus === \"\") {\n      status = \"HasNoTicketActive\";\n    } else if (supabaseStatus.toUpperCase() === \"COLLECTING\") {\n      status = \"Collecting\";\n    } else {\n      status = \"Ignore\";\n    }\n  }\n\n  // ✅ Nova chave: lang detectada pelo groupJid\n  const lang = getGroupLang(normalized.groupJid);\n\n  results.push({\n    json: {\n      ...normalized,\n      hasTicketActive,\n      status,\n      lang, // \"pt\" | \"es\" | \"en\"\n    }\n  });\n}\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        496,
+        2336
+      ],
+      "id": "f1ecd17e-0874-4ef4-aacc-0a86e211d1ac",
+      "name": "Tratamento de Informações e direcionamento de chaves"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body.body;\nconst messageType = body.data.messageType;\n\nlet status = \"MessageUnknown\";\n\nif (messageType === \"conversation\" || messageType === \"extendedTextMessage\") {\n  status = \"MessageText\";\n} else if (messageType === \"imageMessage\") {\n  status = \"MessageImage\";\n} else if (messageType === \"audioMessage\") {\n  status = \"MessageAudio\";\n} else if (messageType === \"documentMessage\") {\n  status = \"MessageDocument\";\n} else if (messageType === \"videoMessage\") {\n  status = \"MessageVideo\";\n} else if (messageType === \"stickerMessage\") {\n  status = \"MessageSticker\";\n}\n\nreturn [{\n  json: {\n    ...body,\n    status: status\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1968,
+        3072
+      ],
+      "id": "d6c82d7f-7bc6-4e64-bb9f-3cf48c720bd8",
+      "name": "Primeiro Tratamento de Informações"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c81f90da-1b30-4ded-83bf-1461c1c88daa",
+              "name": "messageText",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        48,
+        2240
+      ],
+      "id": "8928a4d3-d61d-434d-b515-646dc8e18604",
+      "name": "Separação de Texto da Mensagem"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "Create",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "297ddbf8-1c29-47e2-9d03-e2ae49fda5f3"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Criar Chamado"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "9065041a-102e-4f78-93fe-7e582ae98a7e",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "Ending",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Fechar Chamado"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "6e54d155-344b-45a7-84cb-1d59bf60d79f",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "Collecting",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Coletando Dados"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "ead82806-ca5c-4426-90a0-5e0cb1822567",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "BotImb",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Bot Imbera"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "3ebd4912-ff86-4cf2-b6ae-2387babaee35",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Mensagem sem chamado aberto"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        720,
+        2288
+      ],
+      "id": "400e5cd2-8a6e-4fe0-bf83-66e1066994d9",
+      "name": "Switch - Encaminhamento de função"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.messageType }}",
+                    "rightValue": "imageMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "07bcc2bd-2b05-4346-b399-5bfc45f861a4"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Imagem"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "4fc2358f-618e-42f4-baff-8d6015baf321",
+                    "leftValue": "={{ $json.messageType }}",
+                    "rightValue": "conversation",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Texto"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "c3f7a3fb-2f7c-4156-88f0-af9787408c80",
+                    "leftValue": "={{ $json.messageType }}",
+                    "rightValue": "documentMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Documento"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "ff3c6ce9-b8c4-4122-8453-76dbfe8e95cf",
+                    "leftValue": "={{ $json.messageType }}",
+                    "rightValue": "videoMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Video"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "5b390fd3-182b-4ae1-a627-3d601a277002",
+                    "leftValue": "={{ $json.messageType }}",
+                    "rightValue": "audioMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Audio (transcrito)"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        944,
+        2288
+      ],
+      "id": "453ea451-dcd2-44fa-86e4-679310b50898",
+      "name": "Switch - Coleta de Arquivos"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 5,
+        "options": {
+          "includeUnpaired": true
+        }
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1616,
+        1968
+      ],
+      "id": "51be451c-6123-439f-9799-f751db9b6a63",
+      "name": "Merge - Upload de Arquivos para a API"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "o4-mini-2025-04-16",
+          "mode": "list",
+          "cachedResultName": "o4-mini-2025-04-16"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        2592,
+        752
+      ],
+      "id": "0ffb20a5-a8a2-43be-8b76-9be58190c43e",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "Dq1bDwp43FeWf2cr",
+          "name": "OPENAI - ti.admbr"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json }}",
+        "options": {
+          "systemMessage": "Você é um analista sênior de suporte técnico com profundo conhecimento em diagnóstico de problemas e atendimento ao cliente. Sua única saída permitida é um objeto JSON puro.\n\nANÁLISE DO TICKET:\nLeia atentamente TODOS os campos disponíveis no JSON recebido, especialmente \"message_body\" e \"messages\". Considere:\n- O histórico completo da conversa, não apenas a última mensagem.\n- Tom e urgência do cliente (frustração, urgência, confusão).\n- Contexto técnico implícito (erros citados, fluxos quebrados, impacto no negócio).\n- Ações já tomadas por ambas as partes antes da mensagem atual.\n\nREGRAS CRÍTICAS DE IDIOMA:\n1. Identifique o idioma predominante nas mensagens do ticket.\n2. OBRIGATÓRIO: Escreva \"descricao\" e \"resolucao\" no MESMO idioma detectado.\n\nDIRETRIZES DE QUALIDADE:\n\n- descricao:\n  Redija uma narrativa técnica completa do problema. Inclua: o que o cliente relatou, qual funcionalidade ou sistema está impactado, sintomas observados, erros ou comportamentos inesperados mencionados, e o impacto percebido no negócio ou operação do cliente. Texto corrido, sem \\n, sem bullet points.\n\n- resolucao:\n  Descreva de forma clara e detalhada: o status atual do atendimento, as ações já realizadas para investigar ou resolver o problema, as decisões tomadas, os encaminhamentos feitos (equipe, setor, escalamento), e qual é o próximo passo esperado ou acordado. Se o problema foi resolvido, explique como. Texto corrido, sem \\n.\n\nREGRAS GERAIS:\n- Use 'null' (sem aspas) apenas quando a informação realmente não existir.\n- Nunca invente dados, suposições ou contexto que não esteja explícito no ticket.\n- Seja factual, técnico e objetivo, mas com riqueza de detalhes.\n\nFORMATO DE SAÍDA (APENAS JSON):\n{\n  \"descricao\": \"VALOR_NO_IDIOMA_DETECTADO\",\n  \"resolucao\": \"VALOR_NO_IDIOMA_DETECTADO\"\n}\n\nPROIBIDO: Não adicione explicações, blocos de código markdown (```json) ou qualquer texto fora das chaves."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2528,
+        512
+      ],
+      "id": "9d19174b-5f46-447e-a750-a530fb505d2c",
+      "name": "Analise e Geração de Resumo sobre Descr e Soluti1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const messages = $input.all().map(item => item.json);\n\nconst result = {\n  ticket_id: messages[0]?.aranda_ticket_id,\n  group_jid: messages[0]?.group_jid,\n  opened_by_name: messages[0]?.opened_by_name,\n  opened_by: messages[0]?.opened_by,\n  status: messages[0]?.status,\n  messages: messages.map(msg => ({\n    id: msg.id,\n    sender_name: msg.sender_name,\n    sender_phone: msg.sender_phone,\n    message_body: msg.message_body,\n    message_type: msg.message_type,\n    media_url: msg.media_url,\n    timestamp: msg.timestamp_whatsapp,\n    uuid: msg.uuid\n  }))\n};\n\nreturn [{ json: result }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2288,
+        640
+      ],
+      "id": "6559bc7f-a089-4c6a-9f97-7538b0606920",
+      "name": "Payload - Envio de Informações necessarias para AI1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        2592,
+        1664
+      ],
+      "id": "6d4a6442-7501-4a7d-b043-9c8404512e99",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "Dq1bDwp43FeWf2cr",
+          "name": "OPENAI - ti.admbr"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json }}",
+        "options": {
+          "systemMessage": "You are a senior technical support analyst with deep expertise in problem diagnosis and customer service. Your only permitted output is a pure JSON object.\n\nTICKET ANALYSIS:\nCarefully read ALL available fields in the received JSON, especially \"message_body\" and \"messages\". Consider:\n- The full conversation history, not just the latest message.\n- The customer's tone and urgency (frustration, urgency, confusion).\n- Implicit technical context (errors mentioned, broken workflows, business impact).\n- Actions already taken by both parties prior to the current message.\n\nCRITICAL LANGUAGE RULES:\n1. Identify the predominant language in the ticket messages.\n2. MANDATORY: Write \"descricao\" and \"resolucao\" in the SAME detected language.\n\nQUALITY GUIDELINES:\n\n- descricao:\n  Write a complete technical narrative of the issue. Include: what the customer reported, which feature or system is impacted, observed symptoms, errors or unexpected behaviors mentioned, and the perceived impact on the customer's business or operations. Continuous text, no \\n, no bullet points.\n\n- resolucao:\n  Clearly and thoroughly describe: the current status of the support interaction, actions already taken to investigate or resolve the issue, decisions made, escalations or handoffs performed (team, department, escalation level), and what the next expected or agreed step is. If the issue was resolved, explain how. Continuous text, no \\n.\n\nGENERAL RULES:\n- Use 'null' (without quotes) only when the information truly does not exist.\n- Never fabricate data, assumptions, or context not explicitly present in the ticket.\n- Be factual, technical, and objective, but rich in detail.\n\nOUTPUT FORMAT (JSON ONLY):\n{\n  \"descricao\": \"VALUE_IN_DETECTED_LANGUAGE\",\n  \"resolucao\": \"VALUE_IN_DETECTED_LANGUAGE\"\n}\n\nFORBIDDEN: Do not add explanations, markdown code blocks (```json) or any text outside the curly braces."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2512,
+        1440
+      ],
+      "id": "96d2c910-e368-4164-ae17-c8917ae688a4",
+      "name": "Analise e Geração de Resumo sobre Descr e Soluti2"
+    },
+    {
+      "parameters": {
+        "jsCode": "const messages = $input.all().map(item => item.json);\n\nconst result = {\n  ticket_id: messages[0]?.aranda_ticket_id,\n  group_jid: messages[0]?.group_jid,\n  opened_by_name: messages[0]?.opened_by_name,\n  opened_by: messages[0]?.opened_by,\n  status: messages[0]?.status,\n  messages: messages.map(msg => ({\n    id: msg.id,\n    sender_name: msg.sender_name,\n    sender_phone: msg.sender_phone,\n    message_body: msg.message_body,\n    message_type: msg.message_type,\n    media_url: msg.media_url,\n    timestamp: msg.timestamp_whatsapp,\n    uuid: msg.uuid\n  }))\n};\n\nreturn [{ json: result }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2288,
+        1440
+      ],
+      "id": "a2035a51-29ff-416a-8ae2-7298f877d8c3",
+      "name": "Payload - Envio de Informações necessarias para AI2"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('SUPA - Buscar ID do grupo').item.json.lang }}",
+                    "rightValue": "pt",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "f08f37ea-e9f7-4659-a14e-6514efb15a94"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Portugues"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "19988ed9-5cb0-435e-a4e4-862fd48490d2",
+                    "leftValue": "={{ $('SUPA - Buscar ID do grupo').item.json.lang }}",
+                    "rightValue": "es",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Espanhol"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "a2cf5e44-e23a-4a8a-b8a9-32dcb30a346b",
+                    "leftValue": "={{ $('SUPA - Buscar ID do grupo').item.json.lang }}",
+                    "rightValue": "en",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Ingles"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        2064,
+        976
+      ],
+      "id": "521dfa0a-e6ff-47d1-bf1f-61bdec14c138",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "jsCode": "const MESSAGES = {\n  pt: {\n    transcription_title: \"🎙️ *Áudio Transcrito!*\",\n    transcription_label: \"📝 *Transcrição:*\",\n    signature:           \"_Suporte TI - Imbera Brasil_ 🏢\",\n  },\n  es: {\n    transcription_title: \"🎙️ *¡Audio Transcrito!*\",\n    transcription_label: \"📝 *Transcripción:*\",\n    signature:           \"_Soporte TI - Imbera Brasil_ 🏢\",\n  },\n  en: {\n    transcription_title: \"🎙️ *Audio Transcribed!*\",\n    transcription_label: \"📝 *Transcription:*\",\n    signature:           \"_IT Support - Imbera Brasil_ 🏢\",\n  },\n};\n\nfunction buildTranscriptionMessage(lang, transcribedText) {\n  const m = MESSAGES[lang] || MESSAGES[\"pt\"];\n  return (\n    m.transcription_title + \"\\n\\n\" +\n    m.transcription_label + \"\\n\" +\n    \"> \" + transcribedText + \"\\n\\n\" +\n    m.signature\n  );\n}\n\nconst groupJid        = $json.groupJid    || \"\";\nconst transcribedText = $json.messageText || \"\";\nconst rawLang         = ($json.lang || \"\").toString().toLowerCase().trim();\nconst lang            = MESSAGES[rawLang] ? rawLang : \"pt\";\n\nconst text = buildTranscriptionMessage(lang, transcribedText);\n\nreturn [{\n  json: {\n    number: groupJid,\n    text,\n    lang,\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1184,
+        2736
+      ],
+      "id": "7eddabe2-dbf0-429c-9182-d8c8e5f76892",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evo.imberabrasil.com/message/sendText/BOTIT",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1376,
+        2736
+      ],
+      "id": "e1e46723-a365-4b54-8183-c2aea96da3df",
+      "name": "EVOL - Notificar Imagem Anexada1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "OySbHXkQ7yLzCZSY",
+          "name": "EVOL - HEADER"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Primeiro Tratamento de Informações",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Payload2": {
+      "main": [
+        [
+          {
+            "node": "SUPA - Buscar Ticket Ativo1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Separação de Texto da Mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detect #AbrirChamado#1": {
+      "main": [
+        [
+          {
+            "node": "IF (No Active Ticket)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF (No Active Ticket)1": {
+      "main": [
+        [
+          {
+            "node": "Payload - Aplicação de Padrão para abertura",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge - Envio ao grupo e db",
+            "type": "main",
+            "index": 2
+          },
+          {
+            "node": "Merge - Informações sobre o chamado e Abertura",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "EVOL - Mensagem para Chamado já ativo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Tratamento de Informações e direcionamento de chaves",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Payload de Estruturação de Mensagens",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Analise e Geração de Resumo sobre Descr e Soluti",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizando Para Fechar Chamado": {
+      "main": [
+        [
+          {
+            "node": "Merge - Recolhimento de Informações - Chamado Cerrado",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "ARAN - Buscar - Chamados na API",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge - Preparação para \"Terminar\" o chamado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to JPEG": {
+      "main": [
+        [
+          {
+            "node": "OpenAI2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge - Upload de Arquivos para a API",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Separa o Base ": {
+      "main": [
+        [
+          {
+            "node": "Convert to JPEG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI2": {
+      "main": [
+        [
+          {
+            "node": "Destaca descricao imagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Destaca descricao imagem": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Separa o Base ",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Separa o Base 64",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Separa o Base 65",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Separa o Base 66",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge4": {
+      "main": [
+        [
+          {
+            "node": "Normalize Payload2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Imagem ou Collecting": {
+      "main": [
+        [
+          {
+            "node": "Prep Upload Aranda",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SUPA - Buscar Ticket Ativo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Prep Upload Aranda": {
+      "main": [
+        [
+          {
+            "node": "Merge - Upload de Arquivos para a API",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Destaca transcricao audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Separa o Base 64": {
+      "main": [
+        [
+          {
+            "node": "Convert to MP3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to MP3": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Destaca transcricao audio": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Analyze document": {
+      "main": [
+        [
+          {
+            "node": "Destaca transcricao audio1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Separa o Base 65": {
+      "main": [
+        [
+          {
+            "node": "Convert to PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to PDF": {
+      "main": [
+        [
+          {
+            "node": "Analyze document",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge - Upload de Arquivos para a API",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Destaca transcricao audio1": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Separa o Base 66": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Merge - Upload de Arquivos para a API",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Merge9": {
+      "main": [
+        [
+          {
+            "node": "Payload - Preparação Envio de Foto - Notificação",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Payload - Tratamento Para envio da API - Create": {
+      "main": [
+        [
+          {
+            "node": "ARAN - Criar Chamado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ARAN - Criar Chamado": {
+      "main": [
+        [
+          {
+            "node": "SUPA - Grava Case-ID e ArandaTicket",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge - Envio ao grupo e db",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Payload - Escolha Idioma e Preparação Mensagem": {
+      "main": [
+        [
+          {
+            "node": "EVOL - Envio de Mensagem de Criação",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge - Envio ao grupo e db": {
+      "main": [
+        [
+          {
+            "node": "Payload - Escolha Idioma e Preparação Mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SUPA - Salva Informações no DB": {
+      "main": [
+        [
+          {
+            "node": "Merge - Informações para o Payload de Atualização",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge - Informações para o Payload de Atualização": {
+      "main": [
+        [
+          {
+            "node": "Payload - Tratamento Para envio da API - Create",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Payload - Preparação de Envio para DB": {
+      "main": [
+        [
+          {
+            "node": "SUPA - Salva Informações no DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge - Informações sobre o chamado e Abertura": {
+      "main": [
+        [
+          {
+            "node": "Payload - Preparação de Envio para DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Payload - Aplicação de Padrão para abertura": {
+      "main": [
+        [
+          {
+            "node": "Merge - Envio ao grupo e db",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge - Informações sobre o chamado e Abertura",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Merge - Informações para o Payload de Atualização",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge - Preparação para \"Terminar\" o chamado": {
+      "main": [
+        [
+          {
+            "node": "Payload - Estruturação do JSON de envio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Payload - Estruturação do JSON de envio": {
+      "main": [
+        [
+          {
+            "node": "ARAN - Finalizar Chamados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ARAN - Finalizar Chamados": {
+      "main": [
+        [
+          {
+            "node": "Merge - Recolhimento de Informações - Chamado Cerrado",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge - Recolhimento de Informações - Chamado Cerrado": {
+      "main": [
+        [
+          {
+            "node": "ARAN - Buscar chamado para Estruturação de JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ARAN - Chamado Cerrado": {
+      "main": [
+        [
+          {
+            "node": "SUPA - Fechar chamado no DB",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge - Agrupamento de Informações para envio da Mensagem do Whatsapp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ARAN - Buscar chamado para Estruturação de JSON": {
+      "main": [
+        [
+          {
+            "node": "ARAN - Chamado Cerrado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ARAN - Buscar - Chamados na API": {
+      "main": [
+        [
+          {
+            "node": "Merge - Preparação para \"Terminar\" o chamado",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge - Agrupamento de Informações para envio da Mensagem do Whatsapp": {
+      "main": [
+        [
+          {
+            "node": "Payload - Estruturação de Mensagem de Fechamento de Chamado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Payload - Estruturação de Mensagem de Fechamento de Chamado": {
+      "main": [
+        [
+          {
+            "node": "EVOL - Envio de Mensagem Finalização",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge - Junção de Informações sobre Descr e Solution": {
+      "main": [
+        [
+          {
+            "node": "Normalizando Para Fechar Chamado",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge - Agrupamento de Informações para envio da Mensagem do Whatsapp",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Analise e Geração de Resumo sobre Descr e Soluti": {
+      "main": [
+        [
+          {
+            "node": "Merge - Junção de Informações sobre Descr e Solution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Payload - Envio de Informações necessarias para AI": {
+      "main": [
+        [
+          {
+            "node": "Analise e Geração de Resumo sobre Descr e Soluti",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SUPA - Busca de Ultimas mensagens dos chamados": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Payload - Estruturação de JSON para Chamados não criados": {
+      "main": [
+        [
+          {
+            "node": "EVOL - Mensagens Chamados não criados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Payload - Preparação Envio de Foto - Notificação": {
+      "main": [
+        [
+          {
+            "node": "EVOL - Notificar Imagem Anexada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SUPA - Buscar ID do grupo": {
+      "main": [
+        [
+          {
+            "node": "Validação se possui Ticket Ativo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SUPA - Buscar Ticket Ativo": {
+      "main": [
+        [
+          {
+            "node": "Merge - Upload de Arquivos para a API",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ARAN - Upload de Arquivo na API": {
+      "main": [
+        [
+          {
+            "node": "Merge9",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Payload de Estruturação de Mensagens": {
+      "main": [
+        [
+          {
+            "node": "SUPA - Cadastro de Mensagens no DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SUPA - Buscar Ticket Ativo1": {
+      "main": [
+        [
+          {
+            "node": "Separação de Informações do DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detectar #Close#": {
+      "main": [
+        [
+          {
+            "node": "Filter - Imagem e Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter - Imagem e Audio": {
+      "main": [
+        [],
+        [
+          {
+            "node": "SUPA - Buscar ID do grupo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validação se possui Ticket Ativo": {
+      "main": [
+        [
+          {
+            "node": "Merge - Junção de Informações sobre Descr e Solution",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "SUPA - Busca de Ultimas mensagens dos chamados",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Payload - Estruturação de JSON para Chamados não criados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Separação de Informações do DB": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Tratamento de Informações e direcionamento de chaves": {
+      "main": [
+        [
+          {
+            "node": "Switch - Encaminhamento de função",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Primeiro Tratamento de Informações": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Separação de Texto da Mensagem": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch - Encaminhamento de função": {
+      "main": [
+        [
+          {
+            "node": "Detect #AbrirChamado#1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Detectar #Close#",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch - Coleta de Arquivos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch - Coleta de Arquivos": {
+      "main": [
+        [
+          {
+            "node": "Switch Imagem ou Collecting",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch Imagem ou Collecting",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch Imagem ou Collecting",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge - Upload de Arquivos para a API": {
+      "main": [
+        [
+          {
+            "node": "ARAN - Upload de Arquivo na API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Analise e Geração de Resumo sobre Descr e Soluti1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analise e Geração de Resumo sobre Descr e Soluti1": {
+      "main": [
+        [
+          {
+            "node": "Merge - Junção de Informações sobre Descr e Solution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Payload - Envio de Informações necessarias para AI1": {
+      "main": [
+        [
+          {
+            "node": "Analise e Geração de Resumo sobre Descr e Soluti1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Analise e Geração de Resumo sobre Descr e Soluti2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analise e Geração de Resumo sobre Descr e Soluti2": {
+      "main": [
+        [
+          {
+            "node": "Merge - Junção de Informações sobre Descr e Solution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Payload - Envio de Informações necessarias para AI2": {
+      "main": [
+        [
+          {
+            "node": "Analise e Geração de Resumo sobre Descr e Soluti2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Payload - Envio de Informações necessarias para AI1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Payload - Envio de Informações necessarias para AI",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Payload - Envio de Informações necessarias para AI2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "EVOL - Notificar Imagem Anexada1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {
+    "Webhook1": [
+      {
+        "headers": {
+          "host": "flows.imberabrasil.com",
+          "user-agent": "n8n",
+          "content-length": "2287",
+          "accept": "application/json,text/html,application/xhtml+xml,application/xml,text/*;q=0.9, image/*;q=0.8, */*;q=0.7",
+          "accept-encoding": "gzip, compress, deflate, br",
+          "content-type": "application/json",
+          "x-forwarded-for": "172.20.0.1",
+          "x-forwarded-host": "flows.imberabrasil.com",
+          "x-forwarded-port": "443",
+          "x-forwarded-proto": "https",
+          "x-forwarded-server": "63c847598c17",
+          "x-real-ip": "172.20.0.1"
+        },
+        "params": {},
+        "query": {},
+        "body": {
+          "headers": {
+            "host": "flows.imberabrasil.com",
+            "user-agent": "axios/1.13.2",
+            "content-length": "1735",
+            "accept": "application/json, text/plain, */*",
+            "accept-encoding": "gzip, compress, deflate, br",
+            "content-type": "application/json",
+            "x-forwarded-for": "172.20.0.1",
+            "x-forwarded-host": "flows.imberabrasil.com",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "63c847598c17",
+            "x-real-ip": "172.20.0.1"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "event": "messages.upsert",
+            "instance": "BOTIT",
+            "data": {
+              "key": {
+                "remoteJid": "5511974601184@s.whatsapp.net",
+                "remoteJidAlt": "5511974601184@s.whatsapp.net",
+                "fromMe": false,
+                "id": "3EB0BB2DB8D61C6607AA4D",
+                "participant": "",
+                "addressingMode": "lid"
+              },
+              "pushName": "Henrique",
+              "status": "DELIVERY_ACK",
+              "message": {
+                "messageContextInfo": {
+                  "threadId": [],
+                  "deviceListMetadata": {
+                    "senderKeyIndexes": [],
+                    "recipientKeyIndexes": [],
+                    "senderKeyHash": {
+                      "0": 144,
+                      "1": 206,
+                      "2": 193,
+                      "3": 193,
+                      "4": 111,
+                      "5": 187,
+                      "6": 173,
+                      "7": 61,
+                      "8": 35,
+                      "9": 203
+                    },
+                    "senderTimestamp": {
+                      "low": 1777400479,
+                      "high": 0,
+                      "unsigned": true
+                    },
+                    "senderAccountType": 0,
+                    "receiverAccountType": 0,
+                    "recipientKeyHash": {
+                      "0": 15,
+                      "1": 167,
+                      "2": 243,
+                      "3": 196,
+                      "4": 160,
+                      "5": 108,
+                      "6": 244,
+                      "7": 59,
+                      "8": 22,
+                      "9": 68
+                    },
+                    "recipientTimestamp": {
+                      "low": 1776171535,
+                      "high": 0,
+                      "unsigned": true
+                    }
+                  },
+                  "deviceListMetadataVersion": 2,
+                  "messageSecret": {
+                    "0": 216,
+                    "1": 149,
+                    "2": 32,
+                    "3": 141,
+                    "4": 146,
+                    "5": 29,
+                    "6": 57,
+                    "7": 254,
+                    "8": 191,
+                    "9": 22,
+                    "10": 95,
+                    "11": 41,
+                    "12": 244,
+                    "13": 19,
+                    "14": 40,
+                    "15": 163,
+                    "16": 217,
+                    "17": 95,
+                    "18": 241,
+                    "19": 193,
+                    "20": 219,
+                    "21": 0,
+                    "22": 162,
+                    "23": 186,
+                    "24": 41,
+                    "25": 242,
+                    "26": 251,
+                    "27": 23,
+                    "28": 246,
+                    "29": 229,
+                    "30": 117,
+                    "31": 62
+                  },
+                  "limitSharingV2": {
+                    "trigger": 0,
+                    "initiatedByMe": false
+                  }
+                },
+                "conversation": "#close#"
+              },
+              "contextInfo": {
+                "mentionedJid": [],
+                "groupMentions": [],
+                "statusAttributions": [],
+                "ephemeralSettingTimestamp": {
+                  "low": 1778329345,
+                  "high": 0,
+                  "unsigned": false
+                },
+                "disappearingMode": {
+                  "initiator": 0,
+                  "trigger": 1,
+                  "initiatedByMe": false
+                }
+              },
+              "messageType": "conversation",
+              "messageTimestamp": 1778502212,
+              "instanceId": "af31957d-21ae-48f6-a6d7-137098cef759",
+              "source": "web"
+            },
+            "destination": "https://flows.imberabrasil.com/webhook/botzap",
+            "date_time": "2026-05-11T09:23:32.992Z",
+            "sender": "5511910078050@s.whatsapp.net",
+            "server_url": "https://evo.imberabrasil.com",
+            "apikey": "AE700DE88C4A-430D-B7F8-F64341FB6DD7"
+          },
+          "webhookUrl": "https://flows.imberabrasil.com/webhook/botzap",
+          "executionMode": "production",
+          "permission": true
+        },
+        "webhookUrl": "https://flows.imberabrasil.com/webhook/avbot",
+        "executionMode": "production"
+      }
+    ]
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0ee9f06d79325eef81a071c8e3afe27e44788748ae212b057dc1c760066d0e58"
+  }
+}
