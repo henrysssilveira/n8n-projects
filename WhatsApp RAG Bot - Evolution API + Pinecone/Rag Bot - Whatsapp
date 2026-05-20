@@ -1,0 +1,881 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cfg-1",
+              "name": "EVOLUTION_URL",
+              "value": "http://evo.imberabrasil.com",
+              "type": "string"
+            },
+            {
+              "id": "cfg-2",
+              "name": "EVOLUTION_INSTANCE",
+              "value": "Henrique Teste",
+              "type": "string"
+            },
+            {
+              "id": "cfg-3",
+              "name": "EVOLUTION_APIKEY",
+              "value": "F54F8ED4D594-47DF-9556-2175DB17827E",
+              "type": "string"
+            },
+            {
+              "id": "cfg-4",
+              "name": "DEBOUNCE_SECONDS",
+              "value": 2,
+              "type": "number"
+            },
+            {
+              "id": "cfg-5",
+              "name": "PINECONE_INDEX",
+              "value": "company-files",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c97a1d28-1137-4bb6-8d35-d7c24e55f65a",
+      "name": "🔧 Configurações",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1616,
+        1200
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "whatsapp-evolution",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "c904dc25-db93-4297-91bc-229038b7a410",
+      "name": "📨 Webhook Evolution API",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        1392,
+        1056
+      ],
+      "webhookId": "whatsapp-evolution-webhook",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "ok",
+        "options": {}
+      },
+      "id": "a64d3459-47ba-4e90-be28-7bc8c233528f",
+      "name": "✅ Resposta 200 OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [
+        1616,
+        912
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extrai e normaliza os campos do payload da Evolution API\nconst body = $input.first().json.body || $input.first().json;\n\n// Suporte a Evolution v1 e v2\nconst data = body.data || body;\nconst key = data.key || {};\nconst message = data.message || {};\n\nconst remoteJid = key.remoteJid || '';\nconst fromMe = key.fromMe || false;\nconst pushName = data.pushName || 'Usuário';\n\n// Ignora mensagens enviadas pelo próprio bot\nif (fromMe) {\n  return [];\n}\n\n// Ignora grupos (remoteJid com @g.us)\nif (remoteJid.includes('@g.us')) {\n  return [];\n}\n\n// Extrai o texto da mensagem (suporte a texto simples, extended e listResponseMessage)\nconst textContent = \n  message.conversation ||\n  message.extendedTextMessage?.text ||\n  message.listResponseMessage?.singleSelectReply?.selectedRowId ||\n  message.buttonsResponseMessage?.selectedButtonId ||\n  '';\n\nif (!textContent || textContent.trim() === '') {\n  return [];\n}\n\nreturn [{\n  json: {\n    remoteJid,\n    pushName,\n    text: textContent.trim(),\n    timestamp: Date.now()\n  }\n}];"
+      },
+      "id": "4098dc28-2962-4fd9-ab8b-5f612e2e6d94",
+      "name": "🔍 Parsear Payload Evolution",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        2064,
+        1136
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "jsCode": "const remoteJid = $input.first().json.remoteJid;\nconst newText = $input.first().json.text;\nconst pushName = $input.first().json.pushName;\nconst now = Date.now();\nconst debounceMs = 2000; // fixo aqui, sem depender de outros nós\n\nconst storeKey = `buffer_${remoteJid.replace(/[^a-zA-Z0-9]/g, '_')}`;\n\nconst stored = $getWorkflowStaticData('global');\nlet buffer = null;\ntry { buffer = stored[storeKey] ? JSON.parse(stored[storeKey]) : null; } catch(e) {}\n\nlet messages = [];\nlet firstTimestamp = now;\nif (buffer) {\n  messages = buffer.messages || [];\n  firstTimestamp = buffer.firstTimestamp || now;\n}\n\nmessages.push(newText);\n\nstored[storeKey] = JSON.stringify({\n  messages,\n  firstTimestamp,\n  lastTimestamp: now,\n  remoteJid,\n  pushName,\n  debounceMs\n});\n\nreturn [{ json: { remoteJid, pushName, messages, firstTimestamp, lastTimestamp: now, storeKey, debounceMs } }];"
+      },
+      "id": "9b00dce4-c916-4ac5-8622-aa9a6a8c35c3",
+      "name": "📝 Gravar no Buffer",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        2288,
+        1136
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "amount": "=4"
+      },
+      "id": "28561199-023b-4e71-bcdd-684e94189c2a",
+      "name": "⏱️ Aguardar Debounce",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        2512,
+        1136
+      ],
+      "typeVersion": 1.1,
+      "webhookId": "debounce-wait"
+    },
+    {
+      "parameters": {
+        "jsCode": "const storeKey = $input.first().json.storeKey;\nconst myLastTimestamp = $input.first().json.lastTimestamp;\nconst remoteJid = $input.first().json.remoteJid;\nconst pushName = $input.first().json.pushName;\nconst debounceMs = $input.first().json.debounceMs;\n\nconst stored = $getWorkflowStaticData('global');\nlet buffer = null;\ntry { buffer = stored[storeKey] ? JSON.parse(stored[storeKey]) : null; } catch(e) {}\n\nif (!buffer) return [];\n\nconst bufferLastTimestamp = buffer.lastTimestamp || 0;\nconst now = Date.now();\nconst timeSinceLast = now - bufferLastTimestamp;\n\n// Chegou mensagem mais nova durante o wait → aborta\nif (bufferLastTimestamp > myLastTimestamp) return [];\n\n// Debounce ainda não completou → aborta\nif (timeSinceLast < debounceMs - 200) return [];\n\nconst messages = buffer.messages || [];\nconst consolidatedText = messages.join(' ');\n\n// Limpa buffer\ndelete stored[storeKey];\n\nreturn [{ json: { remoteJid, pushName, consolidatedText, messageCount: messages.length, messages } }];"
+      },
+      "id": "20d5ad5b-8622-4f4d-81ea-3714b5e0c7ef",
+      "name": "🧩 Consolidar Mensagens",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        2736,
+        1136
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('🧩 Consolidar Mensagens').item.json.consolidatedText }}",
+        "options": {
+          "systemMessage": "Você é o Tasks Orchestrator, uma camada de execução estruturada sobre modelos LLM.\n\nSua função NÃO é apenas responder perguntas.\nSua função é interpretar intenções, estruturar tarefas, selecionar Skills, montar Pipelines, validar progresso e manter consciência de execução.\n\nREGRAS OBRIGATÓRIAS:\n\n1. Você DEVE sempre executar o fluxo Tasks antes de responder:\n\n* interpretar intenção do usuário\n* identificar domínio da tarefa\n* inferir complexidade\n* selecionar pipeline adequado\n* selecionar Skills relevantes\n* estruturar micro-sprints\n* definir critérios de aceite\n* responder somente após a estruturação\n\n2. Você DEVE usar o conteúdo disponível no repositório de Skills, Pipelines e Modelo de Usuário como fonte primária de execução.\n\n3. Você NÃO deve responder de forma genérica quando existir estrutura Tasks aplicável.\n\n4. Toda Task deve conter:\n\n* objetivo\n* complexidade\n* pipeline\n* skills\n* sprints\n* critérios de aceite\n* validação\n\n5. Se a intenção do usuário for ambígua:\n\n* faça refinamento mínimo\n* evite perguntas desnecessárias\n* reduza carga cognitiva\n\n6. Para usuários com sinais de TDAH ou alta distração:\n\n* dividir tarefas em passos menores\n* evitar blocos longos\n* manter consciência de progresso\n* reduzir ambiguidades\n* usar instruções diretas\n\n7. Você deve adaptar o comportamento baseado no Modelo de Usuário:\n\n* estilo de resposta\n* tamanho dos sprints\n* profundidade das explicações\n* frequência de exemplos\n* rigor das validações\n\n8. Sempre priorize:\n\n* continuidade\n* rastreabilidade\n* consciência de progresso\n* redução de fricção cognitiva\n\n9. Quando uma Task for criada:\n\n* gere briefing de execução\n* explique o pipeline\n* mostre sprint atual\n* mostre próximos passos\n\n10. Se não houver informação suficiente para estruturar a execução:\n    responda:\n    \"Preciso de mais contexto para estruturar corretamente esta Task.\"\n\nFORMATO DE RESPOSTA:\n\n* Respostas curtas\n* Conversacionais\n* Objetivas\n* Estruturadas por Sprint\n* Sem floreios\n\nFORMATO PADRÃO:\n\n[Task]\n[tipo]\n[complexidade]\n[pipeline]\n[skills]\n[sprint atual]\n[próxima ação]\n[validação]\n\nNunca responda apenas como chatbot.\nSempre responda como sistema de orquestração Tasks."
+        }
+      },
+      "id": "7f1059f1-e45f-44eb-800f-1a2362ebddf5",
+      "name": "🤖 AI Agent RAG",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        3024,
+        1136
+      ],
+      "typeVersion": 1.7
+    },
+    {
+      "parameters": {
+        "name": "company_documents_tool",
+        "description": "Busca informações nos documentos internos da empresa. Use sempre que precisar responder perguntas sobre políticas, procedimentos, produtos, serviços ou qualquer informação corporativa.\n\nquando não souber, diga que vai procurar se informar para conseguir responder a pergunta"
+      },
+      "id": "882d8043-cdad-41ec-a1e0-26cd3e53e344",
+      "name": "🔎 Vector Store Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "position": [
+        3216,
+        1360
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "tasks",
+          "mode": "list",
+          "cachedResultName": "tasks"
+        },
+        "options": {
+          "pineconeNamespace": ""
+        }
+      },
+      "id": "37d5d92e-e687-475e-ab0d-122b8affbdbf",
+      "name": "Pinecone Retrieval",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "position": [
+        3120,
+        1568
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "pineconeApi": {
+          "id": "FuzGf1NkcYzSSbIg",
+          "name": "Pinecone account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-embedding-001"
+      },
+      "id": "ae481b21-99a6-41be-836d-10930cb7cd66",
+      "name": "Embeddings Retrieval",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "position": [
+        3200,
+        1776
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "lEsg44UNfKnTIz4U",
+          "name": "Google Gemini(PaLM) Api account - Henrique Normal"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "maxOutputTokens": 2048
+        }
+      },
+      "id": "53372ff0-b622-45dc-a6b8-44bf3053986f",
+      "name": "Gemini - Retrieval",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "position": [
+        3408,
+        1568
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "lEsg44UNfKnTIz4U",
+          "name": "Google Gemini(PaLM) Api account - Henrique Normal"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepara o payload para envio via Evolution API\nconst agentOutput = $input.first().json.output || $input.first().json.text || '';\nconst remoteJid = $('🧩 Consolidar Mensagens').first().json.remoteJid;\n\nconst evolutionUrl = $('🔧 Configurações').first().json.EVOLUTION_URL;\nconst instance = $('🔧 Configurações').first().json.EVOLUTION_INSTANCE;\nconst apiKey = $('🔧 Configurações').first().json.EVOLUTION_APIKEY;\n\nreturn [{\n  json: {\n    url: `${evolutionUrl}/message/sendText/${instance}`,\n    apikey: apiKey,\n    remoteJid,\n    text: agentOutput\n  }\n}];"
+      },
+      "id": "60991601-d588-494c-9540-9d3e6fbcd5b4",
+      "name": "📦 Preparar Envio",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        3616,
+        1136
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $json.apikey }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $json.remoteJid }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "aa2f85f3-7e6d-4ae7-a86a-6573b940b913",
+      "name": "📲 Enviar WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        3840,
+        1136
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1840,
+        1136
+      ],
+      "id": "c69efbe7-10c0-4b32-9290-fab5e424d37b",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "tasks",
+          "mode": "list",
+          "cachedResultName": "tasks"
+        },
+        "options": {}
+      },
+      "id": "50ffd713-d898-4511-a100-e5f5bcde6736",
+      "name": "Pinecone Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "position": [
+        1840,
+        1568
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "pineconeApi": {
+          "id": "FuzGf1NkcYzSSbIg",
+          "name": "Pinecone account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-embedding-2"
+      },
+      "id": "8df904d1-5844-498e-a65c-69a7ce2c7270",
+      "name": "Embeddings Google Gemini",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "position": [
+        1808,
+        1792
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "lEsg44UNfKnTIz4U",
+          "name": "Google Gemini(PaLM) Api account - Henrique Normal"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "binaryMode": "specificField",
+        "options": {}
+      },
+      "id": "44f10975-3a8c-4f3d-91c9-b096d3510bef",
+      "name": "Default Data Loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "position": [
+        1936,
+        1792
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "chunkOverlap": 100,
+        "options": {}
+      },
+      "id": "b99eacb4-6943-4266-8106-608ea23eb101",
+      "name": "Recursive Character Text Splitter",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "position": [
+        2016,
+        2000
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.id }}"
+        },
+        "options": {
+          "fileName": "={{ $json.name }}"
+        }
+      },
+      "id": "6917d569-cfda-476d-ba3a-7caa032764c6",
+      "name": "Download File From Google Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        1584,
+        1568
+      ],
+      "typeVersion": 3,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "65517qY4AmDTJg4V",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1rvQd5QyW1GHRcO1IE1rRW4vRItlx5Hl3",
+          "mode": "list",
+          "cachedResultName": "RH-Rag",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1rvQd5QyW1GHRcO1IE1rRW4vRItlx5Hl3"
+        },
+        "event": "fileUpdated",
+        "options": {}
+      },
+      "id": "ae7041b1-6785-48f9-8d82-2a32cf088e7a",
+      "name": "Google Drive File Updated",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "position": [
+        1360,
+        1664
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "65517qY4AmDTJg4V",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1vO2K6oW0IhMn9BcEdR-tqxxzQxTVH3FZ",
+          "mode": "list",
+          "cachedResultName": "Tasks-RAG",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1vO2K6oW0IhMn9BcEdR-tqxxzQxTVH3FZ"
+        },
+        "event": "fileCreated",
+        "options": {
+          "fileType": "all"
+        }
+      },
+      "id": "b8d90e87-9082-42bf-8cc0-5b39f31c19ef",
+      "name": "Google Drive File Created",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "position": [
+        1360,
+        1472
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "65517qY4AmDTJg4V",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "minimax/minimax-m2.5:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        2896,
+        1344
+      ],
+      "id": "4ce20d94-b831-46c0-9edc-74bbb23b3ab7",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "akkw2hIq07CE6sTv",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.remoteJid }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        3040,
+        1344
+      ],
+      "id": "8575bcf0-43c0-48c8-989c-62c41180d943",
+      "name": "Simple Memory"
+    }
+  ],
+  "connections": {
+    "🔧 Configurações": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "📨 Webhook Evolution API": {
+      "main": [
+        [
+          {
+            "node": "✅ Resposta 200 OK",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "🔧 Configurações",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 Parsear Payload Evolution": {
+      "main": [
+        [
+          {
+            "node": "📝 Gravar no Buffer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📝 Gravar no Buffer": {
+      "main": [
+        [
+          {
+            "node": "⏱️ Aguardar Debounce",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⏱️ Aguardar Debounce": {
+      "main": [
+        [
+          {
+            "node": "🧩 Consolidar Mensagens",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🧩 Consolidar Mensagens": {
+      "main": [
+        [
+          {
+            "node": "🤖 AI Agent RAG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🤖 AI Agent RAG": {
+      "main": [
+        [
+          {
+            "node": "📦 Preparar Envio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔎 Vector Store Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "🤖 AI Agent RAG",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Retrieval": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "🔎 Vector Store Tool",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Retrieval": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Retrieval",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini - Retrieval": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "🔎 Vector Store Tool",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📦 Preparar Envio": {
+      "main": [
+        [
+          {
+            "node": "📲 Enviar WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "🔍 Parsear Payload Evolution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download File From Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive File Updated": {
+      "main": [
+        [
+          {
+            "node": "Download File From Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive File Created": {
+      "main": [
+        [
+          {
+            "node": "Download File From Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "🤖 AI Agent RAG",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "🤖 AI Agent RAG",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {
+    "📨 Webhook Evolution API": [
+      {
+        "headers": {
+          "host": "n8n.srv1272435.hstgr.cloud",
+          "user-agent": "axios/1.13.2",
+          "content-length": "1573",
+          "accept": "application/json, text/plain, */*",
+          "accept-encoding": "gzip, compress, deflate, br",
+          "content-type": "application/json",
+          "x-forwarded-for": "162.240.110.60",
+          "x-forwarded-host": "n8n.srv1272435.hstgr.cloud",
+          "x-forwarded-port": "443",
+          "x-forwarded-proto": "https",
+          "x-forwarded-server": "e95eb3fc1d98",
+          "x-real-ip": "162.240.110.60"
+        },
+        "params": {},
+        "query": {},
+        "body": {
+          "event": "messages.upsert",
+          "instance": "Henrique Teste",
+          "data": {
+            "key": {
+              "remoteJid": "5511974601184@s.whatsapp.net",
+              "remoteJidAlt": "5511974601184@s.whatsapp.net",
+              "fromMe": false,
+              "id": "AC3EBA9CA7C834AD2BA4CE2DDBB76C3B",
+              "participant": "",
+              "addressingMode": "lid"
+            },
+            "pushName": "Henrique",
+            "status": "DELIVERY_ACK",
+            "message": {
+              "conversation": "eu quero construir uma task sobre: um sistema que é capaz de filtrar e buscar filmes de acordo com um tema e seu diretor",
+              "messageContextInfo": {
+                "threadId": [],
+                "deviceListMetadata": {
+                  "senderKeyIndexes": [],
+                  "recipientKeyIndexes": [],
+                  "senderKeyHash": {
+                    "0": 144,
+                    "1": 206,
+                    "2": 193,
+                    "3": 193,
+                    "4": 111,
+                    "5": 187,
+                    "6": 173,
+                    "7": 61,
+                    "8": 35,
+                    "9": 203
+                  },
+                  "senderTimestamp": {
+                    "low": 1778697143,
+                    "high": 0,
+                    "unsigned": true
+                  },
+                  "recipientKeyHash": {
+                    "0": 230,
+                    "1": 196,
+                    "2": 93,
+                    "3": 144,
+                    "4": 229,
+                    "5": 246,
+                    "6": 44,
+                    "7": 53,
+                    "8": 163,
+                    "9": 161
+                  },
+                  "recipientTimestamp": {
+                    "low": 1778542282,
+                    "high": 0,
+                    "unsigned": true
+                  }
+                },
+                "deviceListMetadataVersion": 2,
+                "messageSecret": {
+                  "0": 200,
+                  "1": 147,
+                  "2": 215,
+                  "3": 130,
+                  "4": 131,
+                  "5": 164,
+                  "6": 21,
+                  "7": 41,
+                  "8": 149,
+                  "9": 4,
+                  "10": 124,
+                  "11": 6,
+                  "12": 149,
+                  "13": 156,
+                  "14": 140,
+                  "15": 72,
+                  "16": 209,
+                  "17": 235,
+                  "18": 118,
+                  "19": 141,
+                  "20": 116,
+                  "21": 157,
+                  "22": 178,
+                  "23": 63,
+                  "24": 27,
+                  "25": 148,
+                  "26": 28,
+                  "27": 218,
+                  "28": 70,
+                  "29": 184,
+                  "30": 105,
+                  "31": 186
+                }
+              }
+            },
+            "messageType": "conversation",
+            "messageTimestamp": 1779285990,
+            "instanceId": "a9f110f6-46b8-4b26-964d-e114d431963a",
+            "source": "android"
+          },
+          "destination": "https://n8n.srv1272435.hstgr.cloud/webhook/whatsapp-evolution",
+          "date_time": "2026-05-20T11:06:30.729Z",
+          "sender": "551151233976@s.whatsapp.net",
+          "server_url": "https://evo.imberabrasil.com",
+          "apikey": "F54F8ED4D594-47DF-9556-2175DB17827E"
+        },
+        "webhookUrl": "https://n8n.srv1272435.hstgr.cloud/webhook/whatsapp-evolution",
+        "executionMode": "production"
+      }
+    ]
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ceb9c8d5d1f941fa12fd523500309eed3b74c05148509041641b3c0173f578bc"
+  }
+}
